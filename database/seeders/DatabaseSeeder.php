@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             PaymentSeeder::class,
             DiscountSeeder::class,
             UserSeeder::class,
-            FoodSeeder::class,
             OrderSeeder::class,
             OrderItemSeeder::class,
         ]);
