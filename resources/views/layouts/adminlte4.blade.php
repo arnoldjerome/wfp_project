@@ -316,8 +316,70 @@
                       <p>Category</p>
                     </a>
                   </li>
-
-
+                  <li class="nav-item">
+                    <a href="{{ route('user.index') }}" class="nav-link">
+                      <i class="nav-icon fa-solid fa-person"></i>
+                      <p>Customer</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('order.index') }}" class="nav-link">
+                      <i class="nav-icon fa-solid fa-receipt"></i>
+                      <p>Order</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="nav-icon bi bi-circle-fill"></i>
+                      <p>
+                        Report
+                        <i class="nav-arrow bi bi-chevron-right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview" style="box-sizing: border-box; display: none;">
+                      <li class="nav-item">
+                        <a href="{{ url('Report_A') }}" class="nav-link">
+                          <i class="nav-icon bi bi-circle"></i>
+                          <p>Report A</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="#" class="nav-link">
+                          <i class="nav-icon bi bi-circle"></i>
+                          <p>
+                            Report B
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                          </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                          <li class="nav-item">
+                            <a href="#" class="nav-link">
+                              <i class="nav-icon bi bi-record-circle-fill"></i>
+                              <p>Report B1</p>
+                            </a>
+                          </li>
+                          <li class="nav-item">
+                            <a href="#" class="nav-link">
+                              <i class="nav-icon bi bi-record-circle-fill"></i>
+                              <p>Report B2</p>
+                            </a>
+                          </li>
+                          <li class="nav-item">
+                            <a href="#" class="nav-link">
+                              <i class="nav-icon bi bi-record-circle-fill"></i>
+                              <p>Report B3</p>
+                            </a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li class="nav-item">
+                        <a href="#" class="nav-link">
+                          <i class="nav-icon bi bi-circle"></i>
+                          <p>Report C</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
                 </ul>
               </li>
 

@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\ReportController;
+use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
@@ -35,3 +38,11 @@ Route::resource("food", FoodController::class);
 Route::get("/category", [CategoryController::class, "totalFoods"]);
 
 Route::get('/totalfood', [CategoryController::class,"totalFoods"]);
+
+Route::resource("user", UserController::class);
+
+Route::resource("order", OrderController::class);
+
+// Report
+
+Route::get('/Report_A', [ReportController::class,"reportA"]);
