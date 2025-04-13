@@ -58,6 +58,8 @@
       integrity="sha256-+uGLJmmTKOqBr+2E6KDYs/NRsHxSkONXFHUL0fy2O/4="
       crossorigin="anonymous"
     />
+    <!-- icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   </head>
   <!--end::Head-->
   <!--begin::Body-->
@@ -295,7 +297,7 @@
             >
               <li class="nav-item menu-open">
                 <a href="#" class="nav-link active">
-                  <i class="nav-icon bi bi-speedometer"></i>
+                  <i class="nav-icon fa-solid fa-gauge"></i>
                   <p>
                     Dashboard
                     <i class="nav-arrow bi bi-chevron-right"></i>
@@ -304,12 +306,12 @@
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
                     <a href="{{ route('food.index') }}" class="nav-link">
-                      <i class="nav-icon bi bi-piggy-bank"></i>
+                      <i class="nav-icon fa-solid fa-utensils"></i>
                       <p>Food</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./index2.html" class="nav-link">
+                    <a href="{{ url('totalfood') }}" class="nav-link">
                       <i class="nav-icon bi bi-tag-fill"></i>
                       <p>Category</p>
                     </a>
@@ -328,7 +330,49 @@
       <!--end::Sidebar-->
       <!--begin::App Main-->
       <main class="app-main">
-            @yield('content')
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col-sm-6">
+                @yield('form-name')
+              </div>
+            </div>
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <div class="app-content">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col">
+                <div class="card mb-4">
+                  <div class="card-body">
+                    @yield('content')
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer clearfix">
+                    <ul class="pagination pagination-sm m-0 float-end">
+                      <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+                      <li class="page-item"><a class="page-link" href="#">1</a></li>
+                      <li class="page-item"><a class="page-link" href="#">2</a></li>
+                      <li class="page-item"><a class="page-link" href="#">3</a></li>
+                      <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <!-- /.card -->
+              </div>
+            </div>
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content-->
       </main>
 
       <!--end::App Main-->

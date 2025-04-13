@@ -29,10 +29,9 @@ Route::get('/admin/members', function () {
     return view('admin.members');
 });
 
+// Master
 Route::resource("food", FoodController::class);
 
-Route::resource('listmakanan', FoodController::class );
+Route::get("/category", [CategoryController::class, "totalFoods"]);
 
 Route::get('/totalfood', [CategoryController::class,"totalFoods"]);
-
-Route::resource('category', CategoryController::class );

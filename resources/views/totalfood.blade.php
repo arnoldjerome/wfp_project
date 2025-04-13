@@ -1,45 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
+@extends('layouts.adminlte4')
 
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
+@section('form-name')
+<h3 class="mb-0">Category List</h3>
+@endsection
 
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-</style>
-</head>
-<body>
 
-<h2>Categories</h2>
+@section('content')
 
-<table>
+<table class="table table-bordered">
 <thead>
   <tr>
+    <th>ID</th>
     <th>Name</th>
-    <th>Total Food</th>
-
+    <th>Total Foods</th>
   </tr>
 </thead>
 <tbody>
-    @foreach ($report as $r)
-  <tr>
-    <td>{{ $r->name }}</td>
-    <td>{{ $r->TotalFood }}</td>
+  <tr class="align-middle">
+    @foreach ($category as $c)
+    <td>{{ $c->id }}</td>
+    <td>{{ $c->name }}</td>
+    <td>{{ $c->TotalFood }}</td>
   </tr>
   @endforeach
+  </tr>
 </tbody>
 </table>
-
-</body>
-</html>
+@endsection

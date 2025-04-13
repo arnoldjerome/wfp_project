@@ -9,14 +9,14 @@ class CategoryController extends Controller
 {
     public function totalFoods()
     {
-        $report = DB::table('categories as C')
-        ->join('foods as f',"c.id","=","f.category_id")
-        ->select("c.name", DB::raw("count(f.name) as TotalFood"))
-        ->groupBy("c.name")
+        $category = DB::table('categories as c')
+        ->leftJoin('foods as f',"c.id","=","f.category_id")
+        ->select("c.id", "c.name", DB::raw("count(f.name) as TotalFood"))
+        ->groupBy("c.id", "c.name")
         ->get();
 
         // dd($report);
-        return view("totalfood", compact('report'));
+        return view("totalfood", compact('category'));
 
     }
 
@@ -26,6 +26,7 @@ class CategoryController extends Controller
     public function index()
     {
         //
+
     }
 
     /**
