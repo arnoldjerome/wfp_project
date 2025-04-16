@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Food;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Category;
 
 
 class FoodController extends Controller
@@ -16,6 +17,9 @@ class FoodController extends Controller
     {
         // RAW
         $foods = DB::select("select * from foods");
+        $foods = Food::with('category')->get();
+        $categories = Category::all();
+
         // print_r($foods);exit;
 
         // Query Builder
@@ -27,8 +31,7 @@ class FoodController extends Controller
         $foods = Food::all();
         $foods = $foods->sortBy('price');
 
-        return view("food.index", compact('foods'));
-
+        return view("food.index", compact('foods', 'categories'));
 
     }
 
@@ -45,7 +48,23 @@ class FoodController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'nutrition_fact' => 'nullable|string',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        Food::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'nutrition_fact' => $request->nutrition_fact,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+        ]);
+
+        return response()->json(['message' => 'Created successfully']);
     }
 
     /**
@@ -70,7 +89,17 @@ class FoodController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $food = Food::findOrFail($id);
+
+    $food->name = $request->name;
+    $food->description = $request->description;
+    $food->nutrition_fact = $request->nutrition_fact;
+    $food->price = $request->price;
+    $food->category_id = $request->category_id;
+
+    $food->save();
+
+    return response()->json(['message' => 'Updated successfully']);
     }
 
     /**
@@ -78,6 +107,9 @@ class FoodController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $food = Food::findOrFail($id);
+        $food->delete();
+
+        return response()->json(['message' => 'Deleted successfully']);
     }
 }

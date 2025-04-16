@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
+use App\Models\Discount;
+use App\Models\User;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,24 +17,25 @@ class OrderController extends Controller
     public function index()
     {
         //
-        
-        $orders = DB::table('orders as o')
-        ->join('payments as p',"p.id","=","o.payment_method_id")
-        ->join('users as u',"u.id","=","o.user_id")
-        ->leftJoin('discounts as d',"d.id","=","o.discount_id")
-        ->select("o.id", "u.name as user", "o.order_number", "o.status", "p.name as payment", "o.payment_status",
-         "d.code as discount", "o.discount_amount", "o.total_price", "o.final_price", "o.ordered_at")
-        ->get();
 
-        return view("order.index", ["datas" => $orders]);
-    }
+        $orders = Order::with(['user', 'paymentMethod', 'discount'])->get();
+        $users = User::all();
+        $payments = Payment::all();
+        $discounts = Discount::all();
+
+        return view("order.index", compact('orders', 'users', 'payments', 'discounts'));
+        }
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        $users = User::all();
+        $payments = Payment::all();
+        $discounts = Discount::all();
+
+        return view('order.create', compact('users', 'payments', 'discounts'));
     }
 
     /**
@@ -39,7 +43,22 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'required',
+            'status' => 'required',
+            'payment_method_id' => 'required',
+            'payment_status' => 'required',
+            'discount_id' => 'nullable',
+            'discount_amount' => 'nullable|numeric',
+            'total_price' => 'required|numeric',
+            'final_price' => 'required|numeric',
+            'ordered_at' => 'required|date',
+        ]);
+
+        $validated['order_number'] = Order::generateOrderNumber();
+        Order::create($validated);
+
+        return response()->json(['status' => 'success', 'message' => 'Order created!']);
     }
 
     /**
@@ -47,7 +66,11 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        //
+        $users = User::all();
+        $payments = Payment::all();
+        $discounts = Discount::all();
+
+        return view('order.edit', compact('order', 'users', 'payments', 'discounts'));
     }
 
     /**
@@ -63,7 +86,21 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'required',
+            'status' => 'required',
+            'payment_method_id' => 'required',
+            'payment_status' => 'required',
+            'discount_id' => 'nullable',
+            'discount_amount' => 'nullable|numeric',
+            'total_price' => 'required|numeric',
+            'final_price' => 'required|numeric',
+            'ordered_at' => 'required|date',
+        ]);
+
+        $order->update($validated);
+        return response()->json(['message' => 'Order updated successfully.']);
+
     }
 
     /**
@@ -71,6 +108,7 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        //
+        $order->delete();
+        return redirect()->route('order.index')->with('success', 'Order deleted.');
     }
 }

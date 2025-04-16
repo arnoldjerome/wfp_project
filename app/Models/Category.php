@@ -11,6 +11,7 @@ class Category extends Model
     use HasFactory;
 
     protected $table = "categories";
+    protected $fillable = ['name'];
 
     /**
      * Get all of the comments for the Category

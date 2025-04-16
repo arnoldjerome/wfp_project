@@ -35,14 +35,12 @@ Route::get('/admin/members', function () {
 // Master
 Route::resource("food", FoodController::class);
 
-Route::get("/category", [CategoryController::class, "totalFoods"]);
+Route::resource("category", CategoryController::class);
 
-Route::get('/totalfood', [CategoryController::class,"totalFoods"]);
+Route::get('/totalfood', [CategoryController::class, 'index'])->name('category.index');
 
 Route::resource("user", UserController::class);
 
 Route::resource("order", OrderController::class);
 
-// Report
-
-Route::get('/Report_A', [ReportController::class,"reportA"]);
+Route::get("report", [ReportController::class, 'index'])->name('report.index');

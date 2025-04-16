@@ -11,7 +11,7 @@
         <img src="{{ asset('Loobang.png') }}" alt="Food Ordering Logo" class="img-fluid mb-3" style="max-width: 200px;">
         <h1>Food Ordering Kiosk</h1>
         <p>Aplikasi pemesanan makanan yang cepat dan mudah</p>
-        <a href="{{ url('/before_order') }}" class="btn btn-primary">Start Order</a>
+        <a href="{{ url('/food') }}" class="btn btn-primary">Open Apps</a>
     </div>
 </body>
 </html>

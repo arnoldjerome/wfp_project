@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,8 +25,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
-
+        $categories = Category::withCount('foods')->get();
+        return view("totalfood", compact('categories'));
     }
 
     /**
@@ -42,7 +42,15 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|unique:categories,name',
+        ]);
+
+        Category::create([
+            'name' => $request->name,
+        ]);
+
+        return response()->json(['message' => 'Created successfully']);
     }
 
     /**
@@ -66,7 +74,15 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|unique:categories,name,' . $id,
+        ]);
+
+        $category = Category::findOrFail($id);
+        $category->name = $request->name;
+        $category->save();
+
+        return response()->json(['message' => 'Updated successfully']);
     }
 
     /**
@@ -74,6 +90,9 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $category = Category::findOrFail($id);
+    $category->delete();
+
+    return response()->json(['message' => 'Deleted successfully']);
     }
 }

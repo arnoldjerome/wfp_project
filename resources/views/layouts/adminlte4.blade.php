@@ -329,56 +329,10 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                      <a href="#" class="nav-link">
+                    <a href="{{ route('report.index') }}" class="nav-link">
                       <i class="nav-icon bi bi-circle-fill"></i>
-                      <p>
-                        Report
-                        <i class="nav-arrow bi bi-chevron-right"></i>
-                      </p>
+                      <p>Report</p>
                     </a>
-                    <ul class="nav nav-treeview" style="box-sizing: border-box; display: none;">
-                      <li class="nav-item">
-                        <a href="{{ url('Report_A') }}" class="nav-link">
-                          <i class="nav-icon bi bi-circle"></i>
-                          <p>Report A</p>
-                        </a>
-                      </li>
-                      <li class="nav-item">
-                        <a href="#" class="nav-link">
-                          <i class="nav-icon bi bi-circle"></i>
-                          <p>
-                            Report B
-                            <i class="nav-arrow bi bi-chevron-right"></i>
-                          </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                          <li class="nav-item">
-                            <a href="#" class="nav-link">
-                              <i class="nav-icon bi bi-record-circle-fill"></i>
-                              <p>Report B1</p>
-                            </a>
-                          </li>
-                          <li class="nav-item">
-                            <a href="#" class="nav-link">
-                              <i class="nav-icon bi bi-record-circle-fill"></i>
-                              <p>Report B2</p>
-                            </a>
-                          </li>
-                          <li class="nav-item">
-                            <a href="#" class="nav-link">
-                              <i class="nav-icon bi bi-record-circle-fill"></i>
-                              <p>Report B3</p>
-                            </a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="nav-item">
-                        <a href="#" class="nav-link">
-                          <i class="nav-icon bi bi-circle"></i>
-                          <p>Report C</p>
-                        </a>
-                      </li>
-                    </ul>
                   </li>
                 </ul>
               </li>
@@ -703,6 +657,12 @@
       sparkline3.render();
     </script>
     <!--end::Script-->
+    <!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap Bundle JS (termasuk Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+@stack('scripts')
   </body>
   <!--end::Body-->
 </html>

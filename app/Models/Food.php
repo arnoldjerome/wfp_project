@@ -18,5 +18,12 @@ class Food extends Model
     {
         return $this->belongsTo(Category::class, 'category_id','id');
     }
+    protected $fillable = [
+        'name',
+        'description',
+        'nutrition_fact',
+        'price',
+        'category_id'
+    ];
 
 }
