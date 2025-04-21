@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Enums\OrderStatus;
+use App\Models\Food;
 
 class OrderController extends Controller
 {
@@ -18,12 +20,14 @@ class OrderController extends Controller
     {
         //
 
-        $orders = Order::with(['user', 'paymentMethod', 'discount'])->get();
+        $orders = Order::with(['user', 'paymentMethod', 'discount', 'food'])->get();
         $users = User::all();
         $payments = Payment::all();
         $discounts = Discount::all();
+        $statuses = OrderStatus::options();
+        $foods = Food::all();
 
-        return view("order.index", compact('orders', 'users', 'payments', 'discounts'));
+        return view("order.index", compact('orders', 'users', 'payments', 'discounts', 'statuses', 'foods'));
         }
 
     /**
@@ -34,8 +38,9 @@ class OrderController extends Controller
         $users = User::all();
         $payments = Payment::all();
         $discounts = Discount::all();
+        $foods = Food::all();
 
-        return view('order.create', compact('users', 'payments', 'discounts'));
+        return view('order.index', compact('users', 'payments', 'discounts', 'foods'));
     }
 
     /**
@@ -45,9 +50,9 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required',
+            'food_id' => 'required',
             'status' => 'required',
             'payment_method_id' => 'required',
-            'payment_status' => 'required',
             'discount_id' => 'nullable',
             'discount_amount' => 'nullable|numeric',
             'total_price' => 'required|numeric',
@@ -70,7 +75,7 @@ class OrderController extends Controller
         $payments = Payment::all();
         $discounts = Discount::all();
 
-        return view('order.edit', compact('order', 'users', 'payments', 'discounts'));
+        return view('order.index', compact('order', 'users', 'payments', 'discounts'));
     }
 
     /**
@@ -88,9 +93,9 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required',
+            'food_id' => 'required',
             'status' => 'required',
             'payment_method_id' => 'required',
-            'payment_status' => 'required',
             'discount_id' => 'nullable',
             'discount_amount' => 'nullable|numeric',
             'total_price' => 'required|numeric',

@@ -12,9 +12,9 @@
       <th>ID</th>
       <th>Customer</th>
       <th>Order No</th>
+      <th>Makanan</th>
       <th>Status</th>
       <th>Payment</th>
-      <th>Payment Status</th>
       <th>Discount</th>
       <th>Discount Amount</th>
       <th>Total Price</th>
@@ -29,9 +29,9 @@
       <td>{{ $o->id }}</td>
       <td>{{ $o->user->name }}</td>
       <td>{{ $o->order_number }}</td>
+      <td>{{ $o->food->name ?? '-' }}</td>
       <td>{{ $o->status }}</td>
       <td>{{ $o->paymentMethod->name }}</td>
-      <td>{{ $o->payment_status }}</td>
       <td>{{ $o->discount->code ?? '-' }}</td>
       <td>{{ $o->discount_amount ?? 0 }}</td>
       <td>{{ $o->total_price }}</td>
@@ -53,7 +53,6 @@
   <i class="fa fa-plus"></i> Add New Order
 </button>
 
-{{-- Modal Create --}}
 <div class="modal fade" id="createOrderModal" tabindex="-1">
   <div class="modal-dialog">
     <form id="createOrderForm" class="modal-content">
@@ -71,7 +70,14 @@
             @endforeach
           </select>
         </div>
-
+        <div class="mb-3">
+            <label>Food</label>
+            <select name="food_id" class="form-control" required>
+              @foreach ($foods as $food)
+                <option value="{{ $food->id }}">{{ $food->name }}</option>
+              @endforeach
+            </select>
+        </div>
         <div class="mb-3">
           <label>Payment Method</label>
           <select name="payment_method_id" class="form-control" required>
@@ -82,14 +88,13 @@
         </div>
 
         <div class="mb-3">
-          <label>Status</label>
-          <input type="text" name="status" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-          <label>Payment Status</label>
-          <input type="text" name="payment_status" class="form-control" required>
-        </div>
+            <label>Status</label>
+            <select name="status" class="form-control" required>
+              @foreach ($statuses as $s)
+                <option value="{{ $s['value'] }}">{{ $s['label'] }}</option>
+              @endforeach
+            </select>
+          </div>
 
         <div class="mb-3">
           <label>Total Price</label>
@@ -146,6 +151,14 @@
             @endforeach
           </select>
         </div>
+        <div class="mb-3">
+            <label>Food</label>
+            <select name="food_id" id="edit-food-id" class="form-control" required>
+              @foreach ($foods as $food)
+                <option value="{{ $food->id }}">{{ $food->name }}</option>
+              @endforeach
+            </select>
+        </div>
 
         <div class="mb-3">
           <label>Payment Method</label>
@@ -157,14 +170,13 @@
         </div>
 
         <div class="mb-3">
-          <label>Status</label>
-          <input type="text" name="status" id="edit-status" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-          <label>Payment Status</label>
-          <input type="text" name="payment_status" id="edit-payment-status" class="form-control" required>
-        </div>
+            <label>Status</label>
+            <select name="status" id="edit-status" class="form-control" required>
+              @foreach ($statuses as $s)
+                <option value="{{ $s['value'] }}">{{ $s['label'] }}</option>
+              @endforeach
+            </select>
+          </div>
 
         <div class="mb-3">
           <label>Total Price</label>
@@ -237,14 +249,16 @@
   function openEditOrder(order) {
     document.getElementById('edit-id').value = order.id;
     document.getElementById('edit-user-id').value = order.user_id;
+    document.getElementById('edit-food-id').value = order.food_id;
     document.getElementById('edit-payment-method-id').value = order.payment_method_id;
     document.getElementById('edit-status').value = order.status;
-    document.getElementById('edit-payment-status').value = order.payment_status;
     document.getElementById('edit-total-price').value = order.total_price;
     document.getElementById('edit-discount-id').value = order.discount_id ?? '';
     document.getElementById('edit-discount-amount').value = order.discount_amount ?? '';
     document.getElementById('edit-final-price').value = order.final_price;
     document.getElementById('edit-ordered-at').value = order.ordered_at?.slice(0, 16);
+    document.getElementById('edit-food-id').value = order.food_id;
+
 
     new bootstrap.Modal(document.getElementById('editOrderModal')).show();
   }

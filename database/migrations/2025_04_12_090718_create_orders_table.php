@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('order_number')->unique();
-            $table->enum('status', ['pending', 'preparing', 'completed', 'cancelled'])->default('pending'); // Added 'decline'
+            $table->enum('status', ['pending', 'preparing', 'completed', 'cancelled'])->default('pending');
             $table->decimal('total_price', 10, 2);
             $table->foreignId('payment_method_id')->constrained('payments')->onDelete('restrict');
             $table->enum('payment_status', ['waiting', 'paid', 'failed'])->default('waiting');

@@ -3,10 +3,10 @@
   <!--begin::Head-->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>AdminLTE v4 | Dashboard</title>
+    <title>Velocity Team</title>
     <!--begin::Primary Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="title" content="AdminLTE v4 | Dashboard" />
+    <meta name="title" content="Velocity Team" />
     <meta name="author" content="ColorlibHQ" />
     <meta
       name="description"
@@ -60,6 +60,24 @@
     />
     <!-- icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        .bg-burgundy {
+          background-color: #800020 !important;
+          color: white;
+        }
+
+        .bg-burgundy .nav-link,
+        .bg-burgundy .brand-link,
+        .bg-burgundy .nav-icon {
+          color: white !important;
+        }
+
+        .bg-burgundy .nav-link.active,
+        .bg-burgundy .nav-link:hover {
+          background-color: #991f34 !important;
+          color: #fff !important;
+        }
+      </style>
   </head>
   <!--end::Head-->
   <!--begin::Body-->
@@ -266,20 +284,20 @@
       </nav>
       <!--end::Header-->
       <!--begin::Sidebar-->
-      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+      <aside class="app-sidebar bg-burgundy shadow" data-bs-theme="dark">
         <!--begin::Sidebar Brand-->
         <div class="sidebar-brand">
           <!--begin::Brand Link-->
           <a href="./index.html" class="brand-link">
             <!--begin::Brand Image-->
             <img
-              src="{{ asset('adminlte4/assets/img/AdminLTELogo.png') }}"
+              src="{{ asset('Loobang.png') }}"
               alt="AdminLTE Logo"
               class="brand-image opacity-75 shadow"
             />
             <!--end::Brand Image-->
             <!--begin::Brand Text-->
-            <span class="brand-text fw-light">AdminLTE 4</span>
+            <span class="brand-text fw-light">VELOCITY</span>
             <!--end::Brand Text-->
           </a>
           <!--end::Brand Link-->
@@ -287,60 +305,61 @@
         <!--end::Sidebar Brand-->
         <!--begin::Sidebar Wrapper-->
         <div class="sidebar-wrapper">
-          <nav class="mt-2">
-            <!--begin::Sidebar Menu-->
-            <ul
-              class="nav sidebar-menu flex-column"
-              data-lte-toggle="treeview"
-              role="menu"
-              data-accordion="false"
-            >
-              <li class="nav-item menu-open">
-                <a href="#" class="nav-link active">
-                  <i class="nav-icon fa-solid fa-gauge"></i>
-                  <p>
-                    Dashboard
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="{{ route('food.index') }}" class="nav-link">
-                      <i class="nav-icon fa-solid fa-utensils"></i>
-                      <p>Food</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{ url('totalfood') }}" class="nav-link">
-                      <i class="nav-icon bi bi-tag-fill"></i>
-                      <p>Category</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{ route('user.index') }}" class="nav-link">
-                      <i class="nav-icon fa-solid fa-person"></i>
-                      <p>Customer</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{ route('order.index') }}" class="nav-link">
-                      <i class="nav-icon fa-solid fa-receipt"></i>
-                      <p>Order</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{ route('report.index') }}" class="nav-link">
-                      <i class="nav-icon bi bi-circle-fill"></i>
-                      <p>Report</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
+            <nav class="mt-2">
+              <!--begin::Sidebar Menu-->
+              <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
+                <!-- Dashboard -->
+                <li class="nav-item">
+                  <a href="#" class="nav-link active">
+                    <i class="nav-icon fa-solid fa-gauge"></i>
+                    <p>Dashboard</p>
+                  </a>
+                </li>
 
-            </ul>
-            <!--end::Sidebar Menu-->
-          </nav>
-        </div>
+                <!-- Food -->
+                <li class="nav-item">
+                  <a href="{{ route('food.index') }}" class="nav-link">
+                    <i class="nav-icon fa-solid fa-utensils"></i>
+                    <p>Food</p>
+                  </a>
+                </li>
+
+                <!-- Category -->
+                <li class="nav-item">
+                  <a href="{{ url('totalfood') }}" class="nav-link">
+                    <i class="nav-icon bi bi-tag-fill"></i>
+                    <p>Category</p>
+                  </a>
+                </li>
+
+                <!-- Customer -->
+                <li class="nav-item">
+                  <a href="{{ route('user.index') }}" class="nav-link">
+                    <i class="nav-icon fa-solid fa-person"></i>
+                    <p>Customer</p>
+                  </a>
+                </li>
+
+                <!-- Order -->
+                <li class="nav-item">
+                  <a href="{{ route('order.index') }}" class="nav-link">
+                    <i class="nav-icon fa-solid fa-receipt"></i>
+                    <p>Order</p>
+                  </a>
+                </li>
+
+                <!-- Report -->
+                <li class="nav-item">
+                  <a href="{{ route('report.index') }}" class="nav-link">
+                    <i class="nav-icon bi bi-circle-fill"></i>
+                    <p>Report</p>
+                  </a>
+                </li>
+              </ul>
+              <!--end::Sidebar Menu-->
+            </nav>
+          </div>
+
         <!--end::Sidebar Wrapper-->
       </aside>
       <!--end::Sidebar-->
@@ -395,7 +414,7 @@
       <!--begin::Footer-->
       <footer class="app-footer">
         <!--begin::To the end-->
-        <div class="float-end d-none d-sm-inline">Anything you want</div>
+        <div class="float-end d-none d-sm-inline">Your Resto is on Our Service</div>
         <!--end::To the end-->
         <!--begin::Copyright-->
         <strong>

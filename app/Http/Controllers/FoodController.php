@@ -24,12 +24,12 @@ class FoodController extends Controller
 
         // Query Builder
         $foods = DB::table("foods")->get();
-        $foods = $foods->sortBy('price');
+        $foods = $foods->sortBy('id');
         // print_r($foods);exit;
         // dd($foods);
         //Eloquent Model
         $foods = Food::all();
-        $foods = $foods->sortBy('price');
+        $foods = $foods->sortBy('id');
 
         return view("food.index", compact('foods', 'categories'));
 

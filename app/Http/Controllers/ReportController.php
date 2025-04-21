@@ -9,12 +9,13 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $mostOrderedFood = DB::table('order_items')
-            ->join('foods', 'order_items.foods_id', '=', 'foods.id')
-            ->select('foods.name', DB::raw('SUM(order_items.quantity) as total_ordered'))
+        $mostOrderedFood = DB::table('orders')
+            ->join('foods', 'orders.food_id', '=', 'foods.id')
+            ->select('foods.name', DB::raw('COUNT(orders.id) as total_ordered'))
             ->groupBy('foods.name')
             ->orderByDesc('total_ordered')
             ->first();
+
 
         $categoryWithMostFoods = DB::table('foods')
             ->join('categories', 'foods.category_id', '=', 'categories.id')
