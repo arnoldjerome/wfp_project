@@ -309,52 +309,54 @@
               <!--begin::Sidebar Menu-->
               <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 <!-- Dashboard -->
+                <!-- Dashboard -->
                 <li class="nav-item">
-                  <a href="#" class="nav-link active">
+                    <a href="{{ route('dashboard.index') }}" class="nav-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-gauge"></i>
                     <p>Dashboard</p>
-                  </a>
+                    </a>
                 </li>
 
                 <!-- Food -->
                 <li class="nav-item">
-                  <a href="{{ route('food.index') }}" class="nav-link">
+                    <a href="{{ route('food.index') }}" class="nav-link {{ request()->routeIs('food.index') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-utensils"></i>
                     <p>Food</p>
-                  </a>
+                    </a>
                 </li>
 
                 <!-- Category -->
                 <li class="nav-item">
-                  <a href="{{ url('totalfood') }}" class="nav-link">
+                    <a href="{{ url('totalfood') }}" class="nav-link {{ request()->is('totalfood') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-tag-fill"></i>
                     <p>Category</p>
-                  </a>
+                    </a>
                 </li>
 
                 <!-- Customer -->
                 <li class="nav-item">
-                  <a href="{{ route('user.index') }}" class="nav-link">
+                    <a href="{{ route('user.index') }}" class="nav-link {{ request()->routeIs('user.index') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-person"></i>
                     <p>Customer</p>
-                  </a>
+                    </a>
                 </li>
 
                 <!-- Order -->
                 <li class="nav-item">
-                  <a href="{{ route('order.index') }}" class="nav-link">
+                    <a href="{{ route('order.index') }}" class="nav-link {{ request()->routeIs('order.index') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-receipt"></i>
                     <p>Order</p>
-                  </a>
+                    </a>
                 </li>
 
                 <!-- Report -->
                 <li class="nav-item">
-                  <a href="{{ route('report.index') }}" class="nav-link">
+                    <a href="{{ route('report.index') }}" class="nav-link {{ request()->routeIs('report.index') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-circle-fill"></i>
                     <p>Report</p>
-                  </a>
+                    </a>
                 </li>
+
               </ul>
               <!--end::Sidebar Menu-->
             </nav>
