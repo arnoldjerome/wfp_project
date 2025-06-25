@@ -29,11 +29,14 @@
     {{-- HEADER --}}
     @include('frontend.layouts.header')
 
-    {{-- MAIN CONTENT --}}
+
+    {{-- MAIN --}}
     @yield('content')
 
     {{-- FOOTER --}}
     @include('frontend.layouts.footer')
+
+
 
     <!-- {{-- SCROLL TO TOP --}}
     <div class="fp__scroll_btn">
@@ -66,6 +69,16 @@
             @endforeach
         @endif
     </script>
+
+    <script>
+        toastr.options.progressBar = true;
+        @if (session('success'))
+            toastr.success('{{ session('success') }}', 'Success');
+        @endif
+    </script>
+
+    
+
 </body>
 
 </html>
