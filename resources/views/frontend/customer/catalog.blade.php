@@ -1,95 +1,139 @@
 @extends('frontend.layouts.master')
 
 @section('content')
-    <!-- MENU PAGE -->
-    <section class="menu_kiosk pt-4 pb-5" style="background-color: #f9f9f9;">
-        <div class="container">
+<!-- MENU PAGE -->
+<section class="menu_kiosk pt-4 pb-5" style="background-color: #f9f9f9;">
+    <div class="container pb-5" style="padding-bottom: 120px !important;">
+        <!-- Judul Kategori -->
+        <div class="mb-3 text-center">
+            <h5 class="fw-bold">What would you like to eat?</h5>
+        </div>
 
-            <!-- Judul Kategori -->
-            <div class="mb-3 text-center">
-                <h5 class="fw-bold">What would you like to eat?</h5>
-            </div>
-
-            <!-- Categories -->
-            <div class="d-flex gap-4 overflow-auto pb-3 mb-4 border-bottom text-center justify-content-center">
-                <div>
-                    <div class="rounded-circle overflow-hidden mx-auto" style="width: 100px; height: 100px;">
-                        <img src="{{ asset('frontend/images/m1.jpg') }}" alt="Appetizer" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <p class="mt-2 fw-semibold mb-0">Appetizer</p>
-                </div>
-                <div>
-                    <div class="rounded-circle overflow-hidden mx-auto" style="width: 100px; height: 100px;">
-                        <img src="{{ asset('frontend/images/menu2.jpg') }}" alt="Main Course" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <p class="mt-2 fw-semibold mb-0">Main Course</p>
-                </div>
-                <div>
-                    <div class="rounded-circle overflow-hidden mx-auto" style="width: 100px; height: 100px;">
-                        <img src="{{ asset('frontend/images/m3.jpg') }}" alt="Dessert" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <p class="mt-2 fw-semibold mb-0">Dessert</p>
-                </div>
-            </div>
-
-            <!-- Menu Grid -->
-            <div class="row g-3">
-                @php
-                    $menus = [
-                        ['name' => 'Chicken Biryani', 'price' => 6, 'img' => 'chicken-biryani.jpg', 'btn' => 'Customize', 'color' => 'danger'],
-                        ['name' => 'Mutton Biryani', 'price' => 8, 'img' => 'mutton-biryani.jpg', 'btn' => 'Add', 'color' => 'warning'],
-                        ['name' => 'Veg Biryani', 'price' => 8, 'img' => 'veg-biryani.jpg', 'btn' => 'Customize', 'color' => 'danger'],
-                        ['name' => 'Fish Biryani', 'price' => 9, 'img' => 'fish-biryani.jpg', 'btn' => 'Customize', 'color' => 'danger'],
-                        ['name' => 'Plain Veg Biryani', 'price' => 6, 'img' => 'plain-veg.jpg', 'btn' => 'Add', 'color' => 'warning'],
-                        ['name' => 'Veg Panner Rice', 'price' => 6.5, 'img' => 'paneer-rice.jpg', 'btn' => 'Customize', 'color' => 'danger'],
-                    ];
-                @endphp
-
-                @foreach ($menus as $menu)
-                    <div class="col-6 col-md-4 col-lg-4">
-                        <div class="border rounded shadow-sm bg-white p-2 text-center position-relative h-100">
-                            <img src="{{ asset('frontend/images/' . $menu['img']) }}" alt="{{ $menu['name'] }}"
-                                class="img-fluid rounded mb-2" style="height: 90px; object-fit: cover;">
-                            <h6 class="mb-1 fw-bold">{{ $menu['name'] }}</h6>
-                            <p class="mb-2">${{ number_format($menu['price'], 2) }}</p>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="name" value="{{ $menu['name'] }}">
-                                <input type="hidden" name="price" value="{{ $menu['price'] }}">
-                                <button class="btn btn-{{ $menu['color'] }} btn-sm w-100">{{ $menu['btn'] }}</button>
-                            </form>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            <!-- Bottom Bar -->
+        <!-- Categories Filter -->
+        <div class="d-flex gap-4 overflow-auto pb-3 mb-4 border-bottom text-center justify-content-center">
             @php
-                $cart = Session::get('cart', []);
-                $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
-                $totalItem = collect($cart)->sum('quantity');
+                $categories = ['All', 'Appetizer', 'Main Course', 'Dessert'];
+            @endphp
+            @foreach ($categories as $cat)
+                <div onclick="filterMenu('{{ $cat }}')" style="cursor:pointer;">
+                    <div class="rounded-circle overflow-hidden mx-auto border border-secondary" style="width: 100px; height: 100px;">
+                        <img src="{{ asset('frontend/images/' . strtolower(str_replace(' ', '', $cat)) . '.jpg') }}" alt="{{ $cat }}"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <p class="mt-2 fw-semibold mb-0">{{ $cat }}</p>
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Menu Grid -->
+        <div class="row row-cols-2 row-cols-md-3 g-3" id="menuContainer">
+            @php
+                $menus = [
+                    ['name' => 'Chicken Biryani', 'price' => 6, 'img' => 'm1.jpg', 'btn' => 'Customize', 'color' => 'danger', 'category' => 'Main Course', 'description' => 'A spicy and flavorful rice dish with chicken.', 'nutrition' => 'Calories: 400, Protein: 20g, Carbs: 60g'],
+                    ['name' => 'Mutton Biryani', 'price' => 8, 'img' => 'm2.jpg', 'btn' => 'Add', 'color' => 'warning', 'category' => 'Main Course', 'description' => 'A rich and tender mutton biryani with aromatic spices.', 'nutrition' => 'Calories: 500, Protein: 30g, Carbs: 50g'],
+                    ['name' => 'Veg Biryani', 'price' => 8, 'img' => 'm3.jpg', 'btn' => 'Customize', 'color' => 'danger', 'category' => 'Main Course', 'description' => 'A vegetarian rice dish with mixed vegetables and spices.', 'nutrition' => 'Calories: 350, Protein: 10g, Carbs: 70g'],
+                    ['name' => 'Fish Biryani', 'price' => 9, 'img' => 'm4.jpg', 'btn' => 'Customize', 'color' => 'danger', 'category' => 'Main Course', 'description' => 'A flavorful fish biryani with aromatic spices.', 'nutrition' => 'Calories: 450, Protein: 25g, Carbs: 55g'],
+                    ['name' => 'Spring Rolls', 'price' => 5, 'img' => 'm5.jpg', 'btn' => 'Add', 'color' => 'warning', 'category' => 'Appetizer', 'description' => 'Crispy and savory spring rolls stuffed with vegetables.', 'nutrition' => 'Calories: 200, Protein: 4g, Carbs: 40g'],
+                    ['name' => 'Ice Cream', 'price' => 4, 'img' => 'm6.jpg', 'btn' => 'Add', 'color' => 'warning', 'category' => 'Dessert', 'description' => 'A creamy and sweet vanilla ice cream.', 'nutrition' => 'Calories: 150, Protein: 2g, Carbs: 30g'],
+                ];
             @endphp
 
-            <div class="fixed-bottom bg-white shadow p-3 border-top">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <div>
-                        <a href="{{ route('cart.index') }}" class="text-decoration-none text-danger fw-bold">
-                            <i class="fas fa-shopping-cart text-danger"></i>
-                            <span class="ms-2">VIEW ORDERS</span>
-                            <span class="badge bg-danger ms-1">{{ $totalItem }}</span>
-                        </a>
-                    </div>
-                    <div class="fw-bold">SUB TOTAL: <span class="text-success">${{ number_format($total, 2) }}</span></div>
-                </div>
-                <div class="d-flex gap-2">
-                    <form action="{{ route('cart.clear') }}" method="POST" class="w-50">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-danger w-100">Cancel Order</button>
-                    </form>
-                    <a href="{{ route('checkout.index') }}" class="btn btn-danger w-50">Confirm Order</a>
-                </div>
-            </div>
+            @foreach ($menus as $menu)
+                <div class="col menu-item" data-category="{{ $menu['category'] }}">
+                    <div class="card h-100 shadow-sm text-center">
+                        <img src="{{ asset('frontend/images/' . $menu['img']) }}" alt="{{ $menu['name'] }} "
+                            class="card-img-top" style="height: 140px; object-fit: cover;">
+                        <div class="card-body">
+                            <h6 class="card-title fw-bold">{{ $menu['name'] }}</h6>
+                            <p class="text-muted mb-1">{{ $menu['category'] }}</p>
+                            <p class="card-text mb-2">${{ number_format($menu['price'], 2) }}</p>
 
+                            @if ($menu['btn'] === 'Customize')
+                                <a href="{{ route('customize.page', ['name' => $menu['name']]) }}"
+                                   class="btn btn-{{ $menu['color'] }} btn-sm w-100">
+                                   Customize
+                                </a>
+                            @else
+                                <form action="{{ route('cart.add') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="name" value="{{ $menu['name'] }}">
+                                    <input type="hidden" name="price" value="{{ $menu['price'] }}">
+                                    <button class="btn btn-{{ $menu['color'] }} btn-sm w-100">{{ $menu['btn'] }}</button>
+                                </form>
+                            @endif
+
+                            <!-- Button to open the modal for detailed info -->
+                            <button class="btn btn-info btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#menuDetailModal{{ $loop->index }}">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for showing menu details -->
+                <div class="modal fade" id="menuDetailModal{{ $loop->index }}" tabindex="-1" aria-labelledby="menuDetailModalLabel{{ $loop->index }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="menuDetailModalLabel{{ $loop->index }}">{{ $menu['name'] }} - Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Menampilkan gambar item -->
+                                <img src="{{ asset('frontend/images/' . $menu['img']) }}" alt="{{ $menu['name'] }}" class="img-fluid mb-3" style="max-height: 200px; object-fit: cover;">
+                                <p><strong>Description:</strong> {{ $menu['description'] }}</p>
+                                <p><strong>Nutrition:</strong> {{ $menu['nutrition'] }}</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            @endforeach
         </div>
-    </section>
+
+        <!-- Bottom Cart Bar -->
+        @php
+            $cart = Session::get('cart', []);
+            $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+            $totalItem = collect($cart)->sum('quantity');
+        @endphp
+
+        <div class="fixed-bottom bg-white shadow p-3 border-top">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <a href="{{ route('cart.index') }}" class="text-decoration-none text-danger fw-bold">
+                        <i class="fas fa-shopping-cart text-danger"></i>
+                        <span class="ms-2">VIEW ORDERS</span>
+                        <span class="badge bg-danger ms-1">{{ $totalItem }}</span>
+                    </a>
+                </div>
+                <div class="fw-bold">SUB TOTAL: <span class="text-success">${{ number_format($total, 2) }}</span></div>
+            </div>
+            <div class="d-flex gap-2">
+                <form action="{{ route('cart.clear') }}" method="POST" class="w-50">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger w-100">Cancel Order</button>
+                </form>
+                <a href="{{ route('checkout.index') }}" class="btn btn-danger w-50">Confirm Order</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JS Filter -->
+<script>
+    function filterMenu(category) {
+        const items = document.querySelectorAll('.menu-item');
+        items.forEach(item => {
+            if (category === 'All' || item.getAttribute('data-category') === category) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+</script>
 @endsection

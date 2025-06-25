@@ -17,8 +17,24 @@
             <tbody>
                 @foreach($cartItems as $id => $item)
                 <tr>
-                    <td>{{ $item['name'] }}</td>
+                    <td>{{ $item['name'] }}<br>
+                        <!-- Menampilkan Addons, pastikan key 'addons' ada -->
+                        @if(isset($item['addons']) && count($item['addons']) > 0)
+                            <strong>Add-ons:</strong> 
+                            <ul>
+                                @foreach($item['addons'] as $addon)
+                                    <li>{{ $addon }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+
+                        <!-- Menampilkan Notes, pastikan key 'notes' ada -->
+                        @if(isset($item['notes']) && $item['notes'])
+                            <strong>Notes:</strong> {{ $item['notes'] }}
+                        @endif
+                    </td>
                     <td>
+                        <!-- Form untuk update quantity -->
                         <form action="{{ route('cart.update', $id) }}" method="POST" class="d-flex align-items-center">
                             @csrf
                             @method('PUT')
@@ -29,6 +45,7 @@
                     </td>
                     <td>${{ number_format($item['price'] * $item['quantity'], 2) }}</td>
                     <td>
+                        <!-- Form untuk menghapus item -->
                         <form action="{{ route('cart.remove', $id) }}" method="POST">
                             @csrf
                             @method('DELETE')
@@ -44,12 +61,15 @@
             </tbody>
         </table>
 
-        <form action="{{ route('cart.clear') }}" method="POST" class="d-inline">
-            @csrf
-            <button type="submit" class="btn btn-outline-danger">Cancel Order</button>
-        </form>
 
-        <a href="{{ route('checkout.index') }}" class="btn btn-success">Checkout</a>
+        <a href="{{ route('menu') }}" class="btn btn-primary">Back to Menu</a>
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <form action="{{ route('cart.clear') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-outline-danger">Cancel Order</button>
+            </form>
+            <a href="{{ route('checkout.index') }}" class="btn btn-success">Checkout</a>
+        </div>
     @else
         <p>Your cart is empty.</p>
         <a href="{{ route('menu') }}" class="btn btn-primary">Back to Menu</a>
