@@ -7,11 +7,15 @@ use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FrontendController;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/', [FrontendController::class, 'index'])->name('home');
+
 
 Route::get('/before_order', function () {
     return view('before_order');
