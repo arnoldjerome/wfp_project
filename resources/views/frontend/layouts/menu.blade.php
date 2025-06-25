@@ -10,13 +10,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav m-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    <a class="nav-link active" aria-current="page" href="{{ route('home') }}">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="about.html">about</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="menu.html">menu</a>
+                    <a class="nav-link" href="{{ route('menu') }}">menu</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="chefs.html">chefs</a>

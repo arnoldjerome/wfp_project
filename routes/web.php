@@ -14,7 +14,13 @@ use App\Http\Controllers\FrontendController;
 //     return view('welcome');
 // });
 
-Route::get('/', [FrontendController::class, 'index'])->name('home');
+Route::get('/', function () {
+    return view('frontend.customer.home');
+})->name('home');
+
+Route::get('/menu', function () {
+    return view('frontend.customer.catalog'); // Atau sesuaikan dengan struktur foldermu
+})->name('menu');
 
 
 Route::get('/before_order', function () {
