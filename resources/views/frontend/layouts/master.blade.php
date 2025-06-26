@@ -20,28 +20,28 @@
     <link rel="stylesheet" href="{{ asset('frontend/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/css/responsive.css') }}">
+
+    {{-- Background image styling --}}
+    <style>
+        body {
+            background-image: url('{{ asset('frontend/images/bg.png') }}');
+            background-repeat: repeat;
+            background-size: contain;
+            background-attachment: fixed;
+        }
+    </style>
 </head>
 
 <body>
 
-
-
     {{-- HEADER --}}
     @include('frontend.layouts.header')
-
 
     {{-- MAIN --}}
     @yield('content')
 
     {{-- FOOTER --}}
     @include('frontend.layouts.footer')
-
-
-
-    <!-- {{-- SCROLL TO TOP --}}
-    <div class="fp__scroll_btn">
-        go to top
-    </div> -->
 
     {{-- JS Scripts --}}
     <script src="{{ asset('frontend/js/jquery-3.6.0.min.js') }}"></script>
@@ -76,8 +76,6 @@
             toastr.success('{{ session('success') }}', 'Success');
         @endif
     </script>
-
-    
 
 </body>
 

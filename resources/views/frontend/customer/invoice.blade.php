@@ -1,52 +1,83 @@
 @extends('frontend.layouts.master')
 
 @section('content')
-    <section class="container py-5">
-        <h2 class="mb-4">Invoice</h2>
+@php
+    $takeawayFee = 3000;
+    $isTakeaway = isset($order['order_type']) && $order['order_type'] === 'takeaway';
+    $subtotal = collect($order['items'])->sum(fn($item) => $item['price'] * $item['quantity']);
+    $finalTotal = $isTakeaway ? $subtotal + $takeawayFee : $subtotal;
+@endphp
 
-        <div class="card p-4">
-            <!-- Customer Info -->
-            <h5>Customer Info</h5>
-            <p><strong>Name:</strong> {{ $order['customer']['first_name'] }} {{ $order['customer']['last_name'] }}</p>
-            <p><strong>Email:</strong> {{ $order['customer']['email'] }}</p>
-            <p><strong>Phone:</strong> {{ $order['customer']['phone'] }}</p>
-            <p><strong>Address:</strong> {{ $order['customer']['address'] }}, {{ $order['customer']['city'] }},
-                {{ $order['customer']['postal_code'] }}</p>
-            <p><strong>Notes:</strong> {{ $order['customer']['notes'] }}</p>
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4 fw-bold">Invoice</h2>
 
-            <hr>
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <!-- Customer Info -->
+                <h5 class="mb-3 fw-bold">Customer Info</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> {{ $order['customer']['first_name'] }} {{ $order['customer']['last_name'] }}</p>
+                        <p><strong>Email:</strong> {{ $order['customer']['email'] }}</p>
+                        <p><strong>Phone:</strong> {{ $order['customer']['phone'] }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Address:</strong> {{ $order['customer']['address'] }}, {{ $order['customer']['city'] }}, {{ $order['customer']['postal_code'] }}</p>
+                        <p><strong>Notes:</strong> {{ $order['customer']['notes'] ?? '-' }}</p>
+                    </div>
+                </div>
 
-            <!-- Order Items -->
-            <h5>Order Details</h5>
-            <ul class="list-group mb-3">
-                @foreach($order['items'] as $item)
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ $item['name'] }} × {{ $item['quantity'] }}
-                        <span>{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }} IDR</span>
-                    </li>
-                @endforeach
-                <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
-                    Total
-                    <span>{{ number_format($order['total'], 0, ',', '.') }} IDR</span>
-                </li>
-            </ul>
+                <hr>
 
-            <!-- Payment & Status -->
-            <p><strong>Payment Method:</strong> {{ ucfirst($order['customer']['payment_method']) }}</p>
-            @if(isset($order['status']))
-                <p><strong>Status:</strong>
-                    @if($order['status'] === 'Waiting for Payment')
-                        <span class="badge bg-warning text-dark">{{ $order['status'] }}</span>
-                    @elseif($order['status'] === 'Processing')
-                        <span class="badge bg-primary">{{ $order['status'] }}</span>
-                    @else
-                        <span class="badge bg-secondary">{{ $order['status'] }}</span>
+                <!-- Order Items -->
+                <h5 class="mb-3 fw-bold">Order Details</h5>
+                <ul class="list-group mb-3">
+                    @foreach($order['items'] as $item)
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ $item['name'] }} × {{ $item['quantity'] }}
+                            <span>{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }} IDR</span>
+                        </li>
+                    @endforeach
+
+                    @if($isTakeaway)
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Packaging Fee (Take Away)
+                            <span>{{ number_format($takeawayFee, 0, ',', '.') }} IDR</span>
+                        </li>
                     @endif
-                </p>
-            @endif
 
+                    <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
+                        Total
+                        <span>{{ number_format($finalTotal, 0, ',', '.') }} IDR</span>
+                    </li>
+                </ul>
 
-            <a href="{{ route('menu') }}" class="btn btn-primary mt-3">Back to Menu</a>
+                <!-- Payment & Status -->
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Payment Method:</strong> {{ ucfirst($order['customer']['payment_method']) }}</p>
+                    @if(isset($order['status']))
+                        <p class="mb-0"><strong>Status:</strong>
+                            @php
+                                $status = strtolower($order['status']);
+                                $badgeClass = match($status) {
+                                    'waiting for payment' => 'bg-warning text-dark',
+                                    'processing' => 'bg-primary',
+                                    'completed' => 'bg-success',
+                                    default => 'bg-secondary',
+                                };
+                            @endphp
+                            <span class="badge {{ $badgeClass }}">{{ $order['status'] }}</span>
+                        </p>
+                    @endif
+                </div>
+
+                <!-- Back Button -->
+                <div class="text-end">
+                    <a href="{{ route('menu') }}" class="btn btn-primary px-4">Back to Menu</a>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection

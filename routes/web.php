@@ -15,71 +15,54 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
 
 /*
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | Web Routes
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 */
 
 // ========== FRONTEND ROUTES ========== //
 
-// Route untuk halaman utama
+// Halaman utama
 Route::get('/', fn() => view('frontend.customer.home'))->name('home');
 
-// Route untuk menu
+// Halaman menu
 Route::get('/menu', fn() => view('frontend.customer.catalog'))->name('menu');
 
-// Route untuk halaman kustomisasi item
+// Halaman kustomisasi menu
 Route::get('/customize/{name}', function ($name) {
     return view('frontend.customer.customize', compact('name'));
 })->name('customize.page');
 
-// Route untuk menambahkan item ke cart
 Route::post('/customize/{name}', [CartController::class, 'addToCart'])->name('customize.add');
 
-// Route untuk sebelum order
-Route::get('/before_order', fn() => view('before_order'));
+// Simpan order type ke cookie
+Route::post('/set-order-type', function (Request $request) {
+    $orderType = $request->input('order_type', 'dinein');
+    return redirect()->route('menu')->withCookie(cookie('order_type', $orderType, 60));
+})->name('order.type.set');
 
-// Route untuk tipe menu
-Route::get('/menu/{type}', fn($type) => view('menu', compact('type')));
+// ========== MASTER DATA (CRUD) ========== //
 
-// ========== MASTER DATA ========== //
-
-// Route untuk resource food (CRUD)
 Route::resource("food", FoodController::class);
-
-// Route untuk resource category (CRUD)
 Route::resource("category", CategoryController::class);
-
-// Route untuk menampilkan total food
-Route::get('/totalfood', [CategoryController::class, 'index'])->name('category.index');
-
-// Route untuk resource user (CRUD)
 Route::resource("user", UserController::class);
-
-// Route untuk resource order (CRUD)
 Route::resource("order", OrderController::class);
-
-// Route untuk laporan
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+Route::get('/totalfood', [CategoryController::class, 'index'])->name('category.index');
 Route::get("report", [ReportController::class, 'index'])->name('report.index');
 
-// Route untuk dashboard
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+// ========== CART (TANPA DATABASE) ========== //
 
-// ========== CART (SEMENTARA TANPA DATABASE) ========== //
-
-// Route untuk menampilkan isi cart
 Route::get('/cart', function () {
     $cartItems = Session::get('cart', []);
     $totalPrice = collect($cartItems)->sum(fn($item) => $item['price'] * $item['quantity']);
     return view('frontend.customer.cart', compact('cartItems', 'totalPrice'));
 })->name('cart.index');
 
-// Route untuk menambah item ke cart
 Route::post('/cart/add', function (Request $request) {
     $cart = Session::get('cart', []);
     $found = false;
 
-    // Cek apakah item sudah ada di cart, jika ada, tambahkan quantity
     foreach ($cart as &$item) {
         if ($item['name'] === $request->name) {
             $item['quantity'] += 1;
@@ -88,7 +71,6 @@ Route::post('/cart/add', function (Request $request) {
         }
     }
 
-    // Jika item belum ada, tambahkan item baru ke cart
     if (!$found) {
         $cart[] = [
             'name' => $request->name,
@@ -97,24 +79,19 @@ Route::post('/cart/add', function (Request $request) {
         ];
     }
 
-    // Simpan cart di session
     Session::put('cart', $cart);
     return back()->with('success', 'Item berhasil ditambahkan ke keranjang!');
 })->name('cart.add');
 
-// Route untuk AJAX update quantity
 Route::post('/cart/update', function (Request $request) {
     $cart = Session::get('cart', []);
-    
-    // Update jumlah item
     foreach ($cart as &$item) {
         if ($item['name'] === $request->name) {
-            $item['quantity'] = max(1, (int) $request->quantity); // Pastikan qty tidak kurang dari 1
+            $item['quantity'] = max(1, (int) $request->quantity);
             break;
         }
     }
 
-    // Simpan cart di session
     Session::put('cart', $cart);
     $totalPrice = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
 
@@ -125,27 +102,18 @@ Route::post('/cart/update', function (Request $request) {
     ]);
 })->name('cart.update');
 
-// Route untuk mengosongkan cart
 Route::post('/cart/clear', function () {
     Session::forget('cart');
     return redirect()->route('menu')->with('success', 'Keranjang berhasil dikosongkan.');
 })->name('cart.clear');
 
+// ========== CART (DATABASE, JIKA DIPAKAI) ========== //
+
+Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
 // ========== CHECKOUT ========== //
 
-// Route untuk menampilkan halaman checkout
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-
-// Route untuk menyimpan data checkout (POST)
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-
-// Route untuk menampilkan invoice
 Route::get('/invoice', [CheckoutController::class, 'invoice'])->name('invoice.show');
-
-// ========== CART (DENGAN DATABASE) ========== //
-
-// Update item di cart (menggunakan PUT)
-Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-
-// Menghapus item dari cart (menggunakan DELETE)
-Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');

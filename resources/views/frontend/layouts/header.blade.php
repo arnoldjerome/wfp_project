@@ -1,15 +1,15 @@
 <header class="fp__header" style="background-color: #8b0000; color: white;">
     <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light">
+        <nav class="navbar navbar-expand-lg navbar-light d-flex align-items-center" style="padding: 8px 0;">
             <a class="navbar-brand" href="{{ route('home') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" height="40">
+                <img src="{{ asset('frontend/images/logo.png') }}" alt="Velocity Logo" style="max-height: 110px; width: auto; display: block;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav align-items-center">
                     <li class="nav-item">
                         <a href="{{ route('home') }}" class="nav-link" style="color: white; font-weight: bold; transition: color 0.3s;">
                             Home
@@ -32,22 +32,42 @@
 </header>
 
 <style>
-    /* Hover effect for navbar links */
     .nav-link:hover {
-        color: #e63946;  /* Bright red color for hover */
+        color: #e63946;
         text-decoration: underline;
     }
 
-    /* Navbar background color */
     .fp__header {
         position: fixed;
         width: 100%;
         top: 0;
         z-index: 999;
-        background-color: #1c1c1c; /* Dark gray for the header */
+        background-color: #8b0000;
     }
 
-    .fp__header .navbar {
-        padding: 15px 0;
+    body {
+        padding-top: 130px; /* disesuaikan dengan tinggi logo + padding navbar */
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding-top: 90px;
+        }
+
+        .navbar-brand img {
+            max-height: 70px;
+            width: auto;
+        }
+
+        .fp__header .navbar {
+            padding: 6px 0;
+        }
+    }
+
+    @media (min-width: 769px) {
+        .navbar-brand img {
+            max-height: 110px;
+            width: auto;
+        }
     }
 </style>
