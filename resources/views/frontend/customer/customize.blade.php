@@ -22,16 +22,16 @@
                 <label class="form-label fw-semibold">Choose Add-ons:</label>
                 <div class="d-flex flex-wrap justify-content-start gap-3"> <!-- Flexbox untuk mengatur checkbox -->
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="addons[]" value="Extra Chicken" id="extraChicken">
-                        <label class="form-check-label" for="extraChicken">Extra Chicken</label>
+                        <input class="form-check-input" type="checkbox" name="addons[]" value="Extra Chicken" id="extraChicken" data-price="2.00">
+                        <label class="form-check-label" for="extraChicken">Extra Chicken ($2.00)</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="addons[]" value="Spicy Sauce" id="spicySauce">
-                        <label class="form-check-label" for="spicySauce">Spicy Sauce</label>
+                        <input class="form-check-input" type="checkbox" name="addons[]" value="Spicy Sauce" id="spicySauce" data-price="1.50">
+                        <label class="form-check-label" for="spicySauce">Spicy Sauce ($1.50)</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="addons[]" value="Cheese" id="cheese">
-                        <label class="form-check-label" for="cheese">Cheese</label>
+                        <input class="form-check-input" type="checkbox" name="addons[]" value="Cheese" id="cheese" data-price="1.00">
+                        <label class="form-check-label" for="cheese">Cheese ($1.00)</label>
                     </div>
                 </div>
             </div>
@@ -48,6 +48,11 @@
                 <input type="number" name="quantity" id="quantity" value="1" class="form-control" min="1">
             </div>
 
+            <!-- Total Price -->
+            <div class="mb-3">
+                <p class="text-center fw-semibold">Total Price: $<span id="totalPrice">6.00</span></p>
+            </div>
+
             <!-- Tombol -->
             <div class="d-flex justify-content-between gap-2">
                 <a href="{{ url()->previous() }}" class="btn btn-outline-secondary w-50">Back</a>
@@ -57,4 +62,36 @@
     </div>
 </section>
 
+<script>
+    // Get all checkboxes for add-ons
+    const addonCheckboxes = document.querySelectorAll('input[name="addons[]"]');
+    const totalPriceElement = document.getElementById('totalPrice');
+    const basePrice = 6.00;
+
+    // Update the total price based on selected add-ons and quantity
+    function updateTotalPrice() {
+        let totalPrice = basePrice;
+        let quantity = document.getElementById('quantity').value;
+
+        addonCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                totalPrice += parseFloat(checkbox.getAttribute('data-price'));
+            }
+        });
+
+        totalPrice *= quantity; // Multiply by quantity
+        totalPriceElement.textContent = totalPrice.toFixed(2); // Update total price on the page
+    }
+
+    // Add event listeners to the checkboxes
+    addonCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateTotalPrice);
+    });
+
+    // Update price when quantity changes
+    document.getElementById('quantity').addEventListener('input', updateTotalPrice);
+
+    // Initial price update
+    updateTotalPrice();
+</script>
 @endsection
