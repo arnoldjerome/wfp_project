@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('discounts', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->enum('type', ['percentage', 'fixed']);
+            $table->enum('type', ['percentage', 'fixed'])->nullable();
             $table->decimal('value', 10, 2);
-            $table->decimal('min_order', 10, 2)->default(0);
+            $table->decimal('min_order', 10, 2)->default(0.00);
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });

@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Food;
+use App\Models\OrderItem;
 use Illuminate\Database\Seeder;
 
 class OrderItemSeeder extends Seeder
@@ -15,19 +15,21 @@ class OrderItemSeeder extends Seeder
         $foods = Food::all();
 
         foreach ($orders as $order) {
-            // Setiap order, tambahkan 1-3 item makanan acak
-            $selectedFoods = $foods->random(rand(1, 3));
-            
-            foreach ($selectedFoods as $food) {
+            $itemsCount = rand(1, 3);
+
+            for ($i = 0; $i < $itemsCount; $i++) {
+                $food = $foods->random();
+                $qty = rand(1, 2);
+                $price = $food->price * $qty;
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'foods_id' => $food->id,
-                    'quantity' => rand(1, 3),
-                    'price' => $food->price, //kolom price food
+                    'quantity' => $qty,
+                    'price'    => $price,
+                    'note'     => fake()->optional()->sentence(),
                 ]);
             }
         }
     }
 }
-
-

@@ -13,16 +13,17 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('order_number')->unique();
             $table->enum('status', ['pending', 'preparing', 'completed', 'cancelled'])->default('pending');
             $table->decimal('total_price', 10, 2);
-            $table->foreignId('payment_method_id')->constrained('payments')->onDelete('restrict');
+            $table->foreignId('payment_method_id')->constrained('payments');
             $table->enum('payment_status', ['waiting', 'paid', 'failed'])->default('waiting');
-            $table->foreignId('discount_id')->nullable()->constrained('discounts')->nullOnDelete();
-            $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->foreignId('discount_id')->nullable()->constrained('discounts')->onDelete('set null');
+            $table->decimal('discount_amount', 10, 2)->default(0.00);
             $table->decimal('final_price', 10, 2);
             $table->timestamp('ordered_at')->nullable();
+            $table->integer('food_id')->nullable(); // optional
             $table->timestamps();
         });
     }

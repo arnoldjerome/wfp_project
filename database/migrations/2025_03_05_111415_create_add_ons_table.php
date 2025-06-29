@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('categories', function (Blueprint $table) {
-            $table->string('name',50);
+        Schema::create('add_ons', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('food_id')->constrained('foods')->onDelete('cascade');
+            $table->string('name', 100);
+            $table->decimal('price', 10, 2)->default(0.00);
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('categories', function (Blueprint $table) {
-            $table->dropColumn(['name']);
-        });
+        Schema::dropIfExists('add_ons');
     }
 };
