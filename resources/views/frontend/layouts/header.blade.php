@@ -1,7 +1,7 @@
 <header class="fp__header" style="background-color: #8b0000; color: white;">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light d-flex align-items-center" style="padding: 8px 0;">
-            <a class="navbar-brand" href="{{ route('home') }}">
+            <a class="navbar-brand" href="{{ route('customer.home') }}">
                 <img src="{{ asset('frontend/images/logo.png') }}" alt="Velocity Logo" style="max-height: 110px; width: auto; display: block;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -11,7 +11,7 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center">
                     <li class="nav-item">
-                        <a href="{{ route('home') }}" class="nav-link" style="color: white; font-weight: bold; transition: color 0.3s;">
+                        <a href="{{ route('customer.home') }}" class="nav-link" style="color: white; font-weight: bold; transition: color 0.3s;">
                             Home
                         </a>
                     </li>

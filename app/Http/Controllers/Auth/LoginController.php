@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -25,7 +26,20 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected function redirectTo()
+    {
+        $user = Auth::user();
+
+        if ($user->can('access-admin')) {
+            return route('dashboard.index'); // ke /dashboard
+        }
+
+        if ($user->can('access-customer')) {
+            return route('customer.home'); // ke /home
+        }
+
+        abort(403, 'Unauthorized');
+    }
 
     /**
      * Create a new controller instance.

@@ -12,9 +12,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\MenuController;
-use App\Models\Food;
-use App\Models\AddOn;
 
 /*
 |--------------------------------------------------------------------------
@@ -149,6 +146,8 @@ Route::middleware(['auth', 'can:access-customer'])->group(function () {
 
     Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+    // ========== CHECKOUT ==========   
 
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
