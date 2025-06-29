@@ -25,6 +25,35 @@
                             Contact
                         </a>
                     </li>
+                    {{-- Guest links --}}
+                    @guest
+                        <li class="nav-item">
+                            <a href="{{ route('login') }}" class="nav-link" style="color: white; font-weight: bold; transition: color 0.3s;">
+                                Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('register') }}" class="nav-link" style="color: white; font-weight: bold; transition: color 0.3s;">
+                                Register
+                            </a>
+                        </li>
+                    @endguest
+
+                    {{-- Authenticated user: Logout --}}
+                    @auth
+                        <li class="nav-item">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="nav-link btn btn-link"
+                                    style="color: white; font-weight: bold; transition: color 0.3s; padding: 0;"
+                                >
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    @endauth
                 </ul>
             </div>
         </nav>

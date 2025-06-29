@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
@@ -21,99 +20,130 @@ use App\Http\Controllers\CartController;
 */
 
 // ========== FRONTEND ROUTES ========== //
+// Halaman utama redirect jika belum logged in
+Route::get('/', function () {
+    if (! auth()->check()) {
+        return redirect()->route('login');
+    }
 
-// Halaman utama
-Route::get('/', fn() => view('frontend.customer.home'))->name('home');
+    if (Gate::allows('access-admin')) {
+        return redirect()->route('dashboard.index');
+    }
 
-// Halaman menu
-Route::get('/menu', fn() => view('frontend.customer.catalog'))->name('menu');
+    if (Gate::allows('access-customer')) {
+        return redirect()->route('customer.home');
+    }
 
-// Halaman kustomisasi menu
-Route::get('/customize/{name}', function ($name) {
-    return view('frontend.customer.customize', compact('name'));
-})->name('customize.page');
+    abort(403, 'Unauthorized');
+})->name('root');
 
-Route::post('/customize/{name}', [CartController::class, 'addToCart'])->name('customize.add');
 
-// Simpan order type ke cookie
-Route::post('/set-order-type', function (Request $request) {
-    $orderType = $request->input('order_type', 'dinein');
-    return redirect()->route('menu')->withCookie(cookie('order_type', $orderType, 60));
-})->name('order.type.set');
+Route::get('/home', function () {
+    return view('frontend.customer.home');
+})->name('customer.home')
+  ->middleware(['auth', 'can:access-customer']);
 
+// hanya admin
 // ========== MASTER DATA (CRUD) ========== //
 
-Route::resource("food", FoodController::class);
-Route::resource("category", CategoryController::class);
-Route::resource("user", UserController::class);
-Route::resource("order", OrderController::class);
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-Route::get('/totalfood', [CategoryController::class, 'index'])->name('category.index');
-Route::get("report", [ReportController::class, 'index'])->name('report.index');
+Route::middleware(['auth', 'can:access-admin'])->group(function () {
+    Route::resource('food', FoodController::class);
+    Route::resource('category', CategoryController::class);
+    Route::resource('user', UserController::class);
+    Route::resource('order', OrderController::class);
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard.index');
+    Route::get('/totalfood', [CategoryController::class, 'index'])
+        ->name('category.index');
+    Route::get('/report', [ReportController::class, 'index'])
+        ->name('report.index');
+});
 
-// ========== CART (TANPA DATABASE) ========== //
+// hanya customer
+Route::middleware(['auth', 'can:access-customer'])->group(function () {
+    // Halaman menu
+    Route::get('/menu', action: fn() => view('frontend.customer.catalog'))->name('menu');
 
-Route::get('/cart', function () {
-    $cartItems = Session::get('cart', []);
-    $totalPrice = collect($cartItems)->sum(fn($item) => $item['price'] * $item['quantity']);
-    return view('frontend.customer.cart', compact('cartItems', 'totalPrice'));
-})->name('cart.index');
+    // Halaman kustomisasi menu
+    Route::get('/customize/{name}', function ($name) {
+        return view('frontend.customer.customize', compact('name'));
+    })->name('customize.page');
 
-Route::post('/cart/add', function (Request $request) {
-    $cart = Session::get('cart', []);
-    $found = false;
+    Route::post('/customize/{name}', [CartController::class, 'addToCart'])->name('customize.add');
 
-    foreach ($cart as &$item) {
-        if ($item['name'] === $request->name) {
-            $item['quantity'] += 1;
-            $found = true;
-            break;
+    // Simpan order type ke cookie
+    Route::post('/set-order-type', function (Request $request) {
+        $orderType = $request->input('order_type', 'dinein');
+        return redirect()->route('menu')->withCookie(cookie('order_type', $orderType, 60));
+    })->name('order.type.set');
+
+    // ========== CART (TANPA DATABASE) ========== //
+
+    Route::get('/cart', function () {
+        $cartItems = Session::get('cart', []);
+        $totalPrice = collect($cartItems)->sum(fn($item) => $item['price'] * $item['quantity']);
+        return view('frontend.customer.cart', compact('cartItems', 'totalPrice'));
+    })->name('cart.index');
+
+    Route::post('/cart/add', function (Request $request) {
+        $cart = Session::get('cart', []);
+        $found = false;
+
+        foreach ($cart as &$item) {
+            if ($item['name'] === $request->name) {
+                $item['quantity'] += 1;
+                $found = true;
+                break;
+            }
         }
-    }
 
-    if (!$found) {
-        $cart[] = [
-            'name' => $request->name,
-            'price' => (float) $request->price,
-            'quantity' => 1,
-        ];
-    }
-
-    Session::put('cart', $cart);
-    return back()->with('success', 'Item berhasil ditambahkan ke keranjang!');
-})->name('cart.add');
-
-Route::post('/cart/update', function (Request $request) {
-    $cart = Session::get('cart', []);
-    foreach ($cart as &$item) {
-        if ($item['name'] === $request->name) {
-            $item['quantity'] = max(1, (int) $request->quantity);
-            break;
+        if (!$found) {
+            $cart[] = [
+                'name' => $request->name,
+                'price' => (float) $request->price,
+                'quantity' => 1,
+            ];
         }
-    }
 
-    Session::put('cart', $cart);
-    $totalPrice = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        Session::put('cart', $cart);
+        return back()->with('success', 'Item berhasil ditambahkan ke keranjang!');
+    })->name('cart.add');
 
-    return response()->json([
-        'success' => true,
-        'cart' => $cart,
-        'totalPrice' => $totalPrice,
-    ]);
-})->name('cart.update');
+    Route::post('/cart/update', function (Request $request) {
+        $cart = Session::get('cart', []);
+        foreach ($cart as &$item) {
+            if ($item['name'] === $request->name) {
+                $item['quantity'] = max(1, (int) $request->quantity);
+                break;
+            }
+        }
 
-Route::post('/cart/clear', function () {
-    Session::forget('cart');
-    return redirect()->route('menu')->with('success', 'Keranjang berhasil dikosongkan.');
-})->name('cart.clear');
+        Session::put('cart', $cart);
+        $totalPrice = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
 
-// ========== CART (DATABASE, JIKA DIPAKAI) ========== //
+        return response()->json([
+            'success' => true,
+            'cart' => $cart,
+            'totalPrice' => $totalPrice,
+        ]);
+    })->name('cart.update');
 
-Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/clear', function () {
+        Session::forget('cart');
+        return redirect()->route('menu')->with('success', 'Keranjang berhasil dikosongkan.');
+    })->name('cart.clear');
 
-// ========== CHECKOUT ========== //
+    // ========== CART (DATABASE, JIKA DIPAKAI) ========== //
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/invoice', [CheckoutController::class, 'invoice'])->name('invoice.show');
+    Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+    // ========== CHECKOUT ==========   
+
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/invoice', [CheckoutController::class, 'invoice'])->name('invoice.show');
+
+});
+
+Auth::routes();

@@ -241,10 +241,10 @@
                   class="user-image rounded-circle shadow"
                   alt="User Image"
                 />
-                <span class="d-none d-md-inline">Alexander Pierce</span>
+                <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                <!--begin::User Image-->
+                <!-- User Header -->
                 <li class="user-header text-bg-primary">
                   <img
                     src="{{ asset('adminlte4/assets/img/user2-160x160.jpg') }}"
@@ -252,30 +252,31 @@
                     alt="User Image"
                   />
                   <p>
-                    Alexander Pierce - Web Developer
-                    <small>Member since Nov. 2023</small>
+                    {{ Auth::user()->name }} - {{ Auth::user()->email }}
+                    <small>Member since {{ Auth::user()->created_at->format('M Y') }}</small>
                   </p>
                 </li>
-                <!--end::User Image-->
-                <!--begin::Menu Body-->
-                <li class="user-body">
-                  <!--begin::Row-->
-                  <div class="row">
-                    <div class="col-4 text-center"><a href="#">Followers</a></div>
-                    <div class="col-4 text-center"><a href="#">Sales</a></div>
-                    <div class="col-4 text-center"><a href="#">Friends</a></div>
-                  </div>
-                  <!--end::Row-->
+
+                <!-- Menu Footer-->
+                <!-- <li>
+                  <a href="#" class="dropdown-item">
+                    <i class="bi bi-person-circle me-2"></i> Profile
+                  </a>
+                </li> -->
+                <li>
+                  <hr class="dropdown-divider">
                 </li>
-                <!--end::Menu Body-->
-                <!--begin::Menu Footer-->
-                <li class="user-footer">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
-                  <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                <li>
+                  <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="dropdown-item">
+                      <i class="bi bi-box-arrow-right me-2"></i> Sign Out
+                    </button>
+                  </form>
                 </li>
-                <!--end::Menu Footer-->
               </ul>
             </li>
+
             <!--end::User Menu Dropdown-->
           </ul>
           <!--end::End Navbar Links-->
@@ -431,259 +432,235 @@
     <!--end::App Wrapper-->
     <!--begin::Script-->
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    </div>
+        <script
+   src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
+   integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ="
+   crossorigin="anonymous"
+  ></script>
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRzU3f1E7yYnLhK5o0l0d5E3d5d5d5d5d=" crossorigin="anonymous"></script>
+
     <script
-      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
-      integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ="
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
+   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+   integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+   crossorigin="anonymous"
+  ></script>
+      <script src="{{ asset('adminlte4/js/adminlte.js') }}"></script>
+      <script>
+   const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
+   const Default = {
+    scrollbarTheme: 'os-theme-light',
+    scrollbarAutoHide: 'leave',
+    scrollbarClickScroll: true,
+   };
+   document.addEventListener('DOMContentLoaded', function () {
+    const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
+    if (sidebarWrapper && typeof OverlayScrollbarsGlobal?.OverlayScrollbars !== 'undefined') {
+     OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+      scrollbars: {
+       theme: Default.scrollbarTheme,
+       autoHide: Default.scrollbarAutoHide,
+       clickScroll: Default.scrollbarClickScroll,
+      },
+     });
+    }
+   });
+  </script>
+      <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" integrity="sha256-ipiJrswvAR4VAx/th+6zWsdeYmVae0iJuiR+6OqHJHQ=" crossorigin="anonymous"></script>
+  <script>
+   const connectedSortables = document.querySelectorAll('.connectedSortable');
+   connectedSortables.forEach((connectedSortable) => {
+    let sortable = new Sortable(connectedSortable, {
+     group: 'shared',
+     handle: '.card-header',
+    });
+   });
+
+   const cardHeaders = document.querySelectorAll('.connectedSortable .card-header');
+   cardHeaders.forEach((cardHeader) => {
+    cardHeader.style.cursor = 'move';
+   });
+  </script>
+  <script
+   src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+   integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
+   crossorigin="anonymous"
+  ></script>
+  <script>
+   // NOTICE!! DO NOT USE ANY OF THIS JAVASCRIPT
+   // IT'S ALL JUST JUNK FOR DEMO
+   // ++++++++++++++++++++++++++++++++++++++++++
+
+   const sales_chart_options = {
+    series: [
+     {
+      name: 'Digital Goods',
+      data: [28, 48, 40, 19, 86, 27, 90],
+     },
+     {
+      name: 'Electronics',
+      data: [65, 59, 80, 81, 56, 55, 40],
+     },
+    ],
+    chart: {
+     height: 300,
+     type: 'area',
+     toolbar: {
+      show: false,
+     },
+    },
+    legend: {
+     show: false,
+    },
+    colors: ['#0d6efd', '#20c997'],
+    dataLabels: {
+     enabled: false,
+    },
+    stroke: {
+     curve: 'smooth',
+    },
+    xaxis: {
+     type: 'datetime',
+     categories: [
+      '2023-01-01',
+      '2023-02-01',
+      '2023-03-01',
+      '2023-04-01',
+      '2023-05-01',
+      '2023-06-01',
+      '2023-07-01',
+     ],
+    },
+    tooltip: {
+     x: {
+      format: 'MMMM',
+     },
+    },
+   };
+
+   const sales_chart = new ApexCharts(
+    document.querySelector('#revenue-chart'),
+    sales_chart_options,
+   );
+   sales_chart.render();
+  </script>
     <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-      integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-    <script src="{{ asset('adminlte4/js/adminlte.js') }}"></script>
-    <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
+   src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js"
+   integrity="sha256-/t1nN2956BT869E6H4V1dnt0X5pAQHPytli+1nTZm2Y="
+   crossorigin="anonymous"
+  ></script>
+  <script
+   src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js"
+   integrity="sha256-XPpPaZlU8S/HWf7FZLAncLg2SAkP8ScUTII89x9D3lY="
+   crossorigin="anonymous"
+  ></script>
     <script>
-      const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
-      const Default = {
-        scrollbarTheme: 'os-theme-light',
-        scrollbarAutoHide: 'leave',
-        scrollbarClickScroll: true,
-      };
-      document.addEventListener('DOMContentLoaded', function () {
-        const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-        if (sidebarWrapper && typeof OverlayScrollbarsGlobal?.OverlayScrollbars !== 'undefined') {
-          OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-            scrollbars: {
-              theme: Default.scrollbarTheme,
-              autoHide: Default.scrollbarAutoHide,
-              clickScroll: Default.scrollbarClickScroll,
-            },
-          });
-        }
-      });
-    </script>
-    <!--end::OverlayScrollbars Configure-->
-    <!-- OPTIONAL SCRIPTS -->
-    <!-- sortablejs -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"
-      integrity="sha256-ipiJrswvAR4VAx/th+6zWsdeYmVae0iJuiR+6OqHJHQ="
-      crossorigin="anonymous"
-    ></script>
-    <!-- sortablejs -->
-    <script>
-      const connectedSortables = document.querySelectorAll('.connectedSortable');
-      connectedSortables.forEach((connectedSortable) => {
-        let sortable = new Sortable(connectedSortable, {
-          group: 'shared',
-          handle: '.card-header',
-        });
-      });
+   const visitorsData = {
+    US: 398, // USA
+    SA: 400, // Saudi Arabia
+    CA: 1000, // Canada
+    DE: 500, // Germany
+    FR: 760, // France
+    CN: 300, // China
+    AU: 700, // Australia
+    BR: 600, // Brazil
+    IN: 800, // India
+    GB: 320, // Great Britain
+    RU: 3000, // Russia
+   };
 
-      const cardHeaders = document.querySelectorAll('.connectedSortable .card-header');
-      cardHeaders.forEach((cardHeader) => {
-        cardHeader.style.cursor = 'move';
-      });
-    </script>
-    <!-- apexcharts -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
-      integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
-      crossorigin="anonymous"
-    ></script>
-    <!-- ChartJS -->
-    <script>
-      // NOTICE!! DO NOT USE ANY OF THIS JAVASCRIPT
-      // IT'S ALL JUST JUNK FOR DEMO
-      // ++++++++++++++++++++++++++++++++++++++++++
+   // World map by jsVectorMap
+   const map = new jsVectorMap({
+    selector: '#world-map',
+    map: 'world',
+   });
 
-      const sales_chart_options = {
-        series: [
-          {
-            name: 'Digital Goods',
-            data: [28, 48, 40, 19, 86, 27, 90],
-          },
-          {
-            name: 'Electronics',
-            data: [65, 59, 80, 81, 56, 55, 40],
-          },
-        ],
-        chart: {
-          height: 300,
-          type: 'area',
-          toolbar: {
-            show: false,
-          },
-        },
-        legend: {
-          show: false,
-        },
-        colors: ['#0d6efd', '#20c997'],
-        dataLabels: {
-          enabled: false,
-        },
-        stroke: {
-          curve: 'smooth',
-        },
-        xaxis: {
-          type: 'datetime',
-          categories: [
-            '2023-01-01',
-            '2023-02-01',
-            '2023-03-01',
-            '2023-04-01',
-            '2023-05-01',
-            '2023-06-01',
-            '2023-07-01',
-          ],
-        },
-        tooltip: {
-          x: {
-            format: 'MMMM yyyy',
-          },
-        },
-      };
+   // Sparkline charts
+   const option_sparkline1 = {
+    series: [
+     {
+      data: [1000, 1200, 920, 927, 931, 1027, 819, 930, 1021],
+     },
+    ],
+    chart: {
+     type: 'area',
+     height: 50,
+     sparkline: {
+      enabled: true,
+     },
+    },
+    stroke: {
+     curve: 'straight',
+    },
+    fill: {
+     opacity: 0.3,
+    },
+    yaxis: {
+     min: 0,
+    },
+    colors: ['#DCE6EC'],
+   };
 
-      const sales_chart = new ApexCharts(
-        document.querySelector('#revenue-chart'),
-        sales_chart_options,
-      );
-      sales_chart.render();
-    </script>
-    <!-- jsvectormap -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js"
-      integrity="sha256-/t1nN2956BT869E6H4V1dnt0X5pAQHPytli+1nTZm2Y="
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js"
-      integrity="sha256-XPpPaZlU8S/HWf7FZLAncLg2SAkP8ScUTII89x9D3lY="
-      crossorigin="anonymous"
-    ></script>
-    <!-- jsvectormap -->
-    <script>
-      const visitorsData = {
-        US: 398, // USA
-        SA: 400, // Saudi Arabia
-        CA: 1000, // Canada
-        DE: 500, // Germany
-        FR: 760, // France
-        CN: 300, // China
-        AU: 700, // Australia
-        BR: 600, // Brazil
-        IN: 800, // India
-        GB: 320, // Great Britain
-        RU: 3000, // Russia
-      };
+   const sparkline1 = new ApexCharts(document.querySelector('#sparkline-1'), option_sparkline1);
+   sparkline1.render();
 
-      // World map by jsVectorMap
-      const map = new jsVectorMap({
-        selector: '#world-map',
-        map: 'world',
-      });
+   const option_sparkline2 = {
+    series: [
+     {
+      data: [515, 519, 520, 522, 652, 810, 370, 627, 319, 630, 921],
+     },
+    ],
+    chart: {
+     type: 'area',
+     height: 50,
+     sparkline: {
+      enabled: true,
+     },
+    },
+    stroke: {
+     curve: 'straight',
+    },
+    fill: {
+     opacity: 0.3,
+    },
+    yaxis: {
+     min: 0,
+    },
+    colors: ['#DCE6EC'],
+   };
 
-      // Sparkline charts
-      const option_sparkline1 = {
-        series: [
-          {
-            data: [1000, 1200, 920, 927, 931, 1027, 819, 930, 1021],
-          },
-        ],
-        chart: {
-          type: 'area',
-          height: 50,
-          sparkline: {
-            enabled: true,
-          },
-        },
-        stroke: {
-          curve: 'straight',
-        },
-        fill: {
-          opacity: 0.3,
-        },
-        yaxis: {
-          min: 0,
-        },
-        colors: ['#DCE6EC'],
-      };
+   const sparkline2 = new ApexCharts(document.querySelector('#sparkline-2'), option_sparkline2);
+   sparkline2.render();
 
-      const sparkline1 = new ApexCharts(document.querySelector('#sparkline-1'), option_sparkline1);
-      sparkline1.render();
+   const option_sparkline3 = {
+    series: [
+     {
+      data: [15, 19, 20, 22, 33, 27, 31, 27, 19, 30, 21],
+     },
+    ],
+    chart: {
+     type: 'area',
+     height: 50,
+     sparkline: {
+      enabled: true,
+     },
+    },
+    stroke: {
+     curve: 'straight',
+    },
+    fill: {
+     opacity: 0.3,
+    },
+    yaxis: {
+     min: 0,
+    },
+    colors: ['#DCE6EC'],
+   };
 
-      const option_sparkline2 = {
-        series: [
-          {
-            data: [515, 519, 520, 522, 652, 810, 370, 627, 319, 630, 921],
-          },
-        ],
-        chart: {
-          type: 'area',
-          height: 50,
-          sparkline: {
-            enabled: true,
-          },
-        },
-        stroke: {
-          curve: 'straight',
-        },
-        fill: {
-          opacity: 0.3,
-        },
-        yaxis: {
-          min: 0,
-        },
-        colors: ['#DCE6EC'],
-      };
-
-      const sparkline2 = new ApexCharts(document.querySelector('#sparkline-2'), option_sparkline2);
-      sparkline2.render();
-
-      const option_sparkline3 = {
-        series: [
-          {
-            data: [15, 19, 20, 22, 33, 27, 31, 27, 19, 30, 21],
-          },
-        ],
-        chart: {
-          type: 'area',
-          height: 50,
-          sparkline: {
-            enabled: true,
-          },
-        },
-        stroke: {
-          curve: 'straight',
-        },
-        fill: {
-          opacity: 0.3,
-        },
-        yaxis: {
-          min: 0,
-        },
-        colors: ['#DCE6EC'],
-      };
-
-      const sparkline3 = new ApexCharts(document.querySelector('#sparkline-3'), option_sparkline3);
-      sparkline3.render();
-    </script>
-    <!--end::Script-->
-    <!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Bootstrap Bundle JS (termasuk Popper) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-@stack('scripts')
-  </body>
+   const sparkline3 = new ApexCharts(document.querySelector('#sparkline-3'), option_sparkline3);
+   sparkline3.render();
+  </script>
+    @stack('scripts')
+ </body>
   <!--end::Body-->
 </html>
