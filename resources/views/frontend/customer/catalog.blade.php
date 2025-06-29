@@ -17,12 +17,6 @@
             <h5 class="fw-bold">What would you like to eat?</h5>
         </div>
 
-        <div class="text-center mb-3">
-            <span class="badge bg-{{ $orderType === 'dinein' ? 'primary' : 'danger' }} px-3 py-2">
-                {{ strtoupper($orderType) }}
-            </span>
-        </div>
-
         <div class="d-flex gap-4 overflow-auto pb-3 mb-4 border-bottom text-center justify-content-center">
             @php
                 // Kategori: All + dari database
@@ -103,9 +97,17 @@
                         <span class="ms-2">VIEW ORDERS</span>
                         <span class="badge bg-danger ms-1">{{ $totalItem }}</span>
                     </a>
-                    <div class="text-muted small">
-                        Order Type: <strong>{{ ucfirst($orderType) }}</strong>
+                    <div id="order_type" class="d-flex align-items-center gap-2 mt-2">
+                        <span class="text-muted small">Order Type:</span>
+                        <span class="badge bg-{{ $orderType === 'dinein' ? 'primary' : 'danger' }} px-3 py-2 fw-bold">
+                            {{ strtoupper($orderType) }}
+                        </span>
+                        <button class="btn btn-outline-secondary btn-sm d-flex align-items-center" 
+                                data-bs-toggle="modal" data-bs-target="#orderTypeModal">
+                            Change
+                        </button>
                     </div>
+
                     @if($orderType === 'takeaway')
                         <div class="text-muted small">
                             Packaging Fee: <strong>{{ number_format($takeawayFee, 0, ',', '.') }} IDR</strong>
@@ -128,7 +130,27 @@
     </div>
 </section>
 
-<script>
+
+<div class="modal fade" id="orderTypeModal" tabindex="-1" aria-labelledby="orderTypeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100 fw-bold" id="orderTypeModalLabel">Select Order Type</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-4">
+        <p class="mb-4">Please choose your order method</p>
+        <div class="d-flex justify-content-around">
+            <button class="btn btn-outline-success px-4 py-2" onclick="setOrderType('dinein')">Dine In</button>
+            <button class="btn btn-outline-danger px-4 py-2" onclick="setOrderType('takeaway')">Take Away</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>  
     function filterMenu(category) {
         const items = document.querySelectorAll('.menu-item');
         items.forEach(item => {
@@ -136,10 +158,27 @@
         });
     }
 
-    // Sinkronkan cookie dengan localStorage saat load
-    if (localStorage.getItem("order_type")) {
-        document.cookie = "order_type=" + localStorage.getItem("order_type") + "; path=/";
+        function setOrderType(type) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ route('order.type.set') }}";
+
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = '_token';
+        csrf.value = '{{ csrf_token() }}';
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'order_type';
+        input.value = type;
+
+        form.appendChild(csrf);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
     }
+
 </script>
 
 <style>
@@ -169,6 +208,11 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    #order_type {
+      margin-top: 0.25em;
+      margin-bottom: 0.25em;
     }
 </style>
 @endsection

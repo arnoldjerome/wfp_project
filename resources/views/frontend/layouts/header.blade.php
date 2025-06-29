@@ -42,15 +42,14 @@
                     {{-- Authenticated user: Logout --}}
                     @auth
                         <li class="nav-item">
-                            <form method="POST" action="{{ route('logout') }}">
+                            <a href="#"
+                              class="nav-link"
+                              onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                              style="color: white; font-weight: bold; transition: color 0.3s;">
+                                Logout
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
-                                <button
-                                    type="submit"
-                                    class="nav-link btn btn-link"
-                                    style="color: white; font-weight: bold; transition: color 0.3s; padding: 0;"
-                                >
-                                    Logout
-                                </button>
                             </form>
                         </li>
                     @endauth
