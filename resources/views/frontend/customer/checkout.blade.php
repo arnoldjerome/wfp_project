@@ -5,12 +5,9 @@
 
 @php
     $orderType = request()->cookie('order_type') ?? old('order_type', 'dinein');
-    $takeawayFee = 3000;
-    $finalTotal = $totalPrice;
-
-    if ($orderType === 'takeaway') {
-        $finalTotal += $takeawayFee;
-    }
+    $takeawayFee = $takeawayFee ?? 3000;
+    $finalTotal = $finalTotal ?? 0;
+    $totalPrice = collect(Session::get('cart', []))->sum(fn($item) => $item['price'] * $item['quantity']);
 @endphp
 
 <section class="fp__breadcrumb" style="background-image: url('{{ asset('frontend/images/breadcrumb_bg.jpg') }}');">
@@ -18,7 +15,7 @@
         <div class="fp__breadcrumb_text">
             <h1>Checkout</h1>
             <ul>
-                <li><a href="{{ route('home') }}">Home</a></li>
+                <li><a href="{{ route('customer.home') }}">Home</a></li>
                 <li>Checkout</li>
             </ul>
         </div>
@@ -42,14 +39,8 @@
                         <h4 class="mb-3 fw-bold">Billing Details</h4>
                         <ul class="list-unstyled mb-0">
                             <li><strong>Order Type:</strong> {{ ucfirst($orderType) }}</li>
-                            <li><strong>First Name:</strong> John</li>
-                            <li><strong>Last Name:</strong> Doe</li>
-                            <li><strong>Email:</strong> johndoe@example.com</li>
-                            <li><strong>Phone:</strong> 081234567890</li>
-                            <li><strong>Address:</strong> Jalan Raya No. 123</li>
-                            <li><strong>City:</strong> Denpasar</li>
-                            <li><strong>Postal Code:</strong> 80111</li>
-                            <li><strong>Notes:</strong> Please deliver between 10AM - 12PM</li>
+                            <li><strong>Name:</strong> {{ Auth::user()->name}} </li>
+                            <li><strong>Email:</strong> {{ Auth::user()->email}} </li>
                         </ul>
                     </div>
                 </div>
@@ -60,7 +51,12 @@
                         <ul class="list-group mb-3">
                             @foreach($cartItems as $item)
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ $item['name'] }} × {{ $item['quantity'] }}
+                                    <div>
+                                        {{ $item['name'] }} × {{ $item['quantity'] }}
+                                        @if(isset($item['note']) && $item['note'])
+                                            <small class="text-muted d-block ms-3">Note: {{ $item['note'] }}</small>
+                                        @endif
+                                    </div>
                                     <span>{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }} IDR</span>
                                 </li>
                             @endforeach
@@ -138,10 +134,6 @@
         cashRadio.addEventListener("change", toggleTransferInfo);
         cardRadio.addEventListener("change", toggleTransferInfo);
 
-        // Ensure order_type cookie stays updated from localStorage
-        if (localStorage.getItem("order_type")) {
-            document.cookie = "order_type=" + localStorage.getItem("order_type") + "; path=/";
-        }
     });
 </script>
 @endsection

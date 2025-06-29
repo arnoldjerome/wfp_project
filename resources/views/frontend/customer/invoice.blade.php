@@ -14,16 +14,40 @@
 
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
+
+                <!-- Header Info -->
+                <div class="d-flex justify-content-between mb-4">
+                    <div>
+                        <p class="mb-1"><strong>Order Date:</strong> {{ $order['order_date'] ?? now()->format('Y-m-d') }}</p>
+                        <p class="mb-0"><strong>Order Type:</strong>
+                            <span class="badge {{ $isTakeaway ? 'bg-danger' : 'bg-primary' }}">
+                                {{ strtoupper($order['order_type'] ?? 'DINEIN') }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <p class="mb-1"><strong>Status:</strong>
+                            @php
+                                $status = strtolower($order['status'] ?? 'processing');
+                                $badgeClass = match($status) {
+                                    'waiting for payment' => 'bg-warning text-dark',
+                                    'processing' => 'bg-primary',
+                                    'completed' => 'bg-success',
+                                    default => 'bg-secondary',
+                                };
+                            @endphp
+                            <span class="badge {{ $badgeClass }}">{{ ucfirst($order['status'] ?? 'Processing') }}</span>
+                        </p>
+                        <p class="mb-0"><strong>Payment:</strong> {{ ucfirst($order['customer']['payment_method'] ?? 'Cash') }}</p>
+                    </div>
+                </div>
+
                 <!-- Customer Info -->
                 <h5 class="mb-3 fw-bold">Customer Info</h5>
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Name:</strong> {{ $order['customer']['first_name'] }} {{ $order['customer']['last_name'] }}</p>
+                        <p><strong>Name:</strong> {{ $order['customer']['name'] }}</p>
                         <p><strong>Email:</strong> {{ $order['customer']['email'] }}</p>
-                        <p><strong>Phone:</strong> {{ $order['customer']['phone'] }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Address:</strong> {{ $order['customer']['address'] }}, {{ $order['customer']['city'] }}, {{ $order['customer']['postal_code'] }}</p>
                         <p><strong>Notes:</strong> {{ $order['customer']['notes'] ?? '-' }}</p>
                     </div>
                 </div>
@@ -40,9 +64,14 @@
                         </li>
                     @endforeach
 
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Subtotal
+                        <span>{{ number_format($subtotal, 0, ',', '.') }} IDR</span>
+                    </li>
+
                     @if($isTakeaway)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Packaging Fee (Take Away)
+                            Packaging Fee (Takeaway)
                             <span>{{ number_format($takeawayFee, 0, ',', '.') }} IDR</span>
                         </li>
                     @endif
@@ -52,25 +81,6 @@
                         <span>{{ number_format($finalTotal, 0, ',', '.') }} IDR</span>
                     </li>
                 </ul>
-
-                <!-- Payment & Status -->
-                <div class="mb-3">
-                    <p class="mb-1"><strong>Payment Method:</strong> {{ ucfirst($order['customer']['payment_method']) }}</p>
-                    @if(isset($order['status']))
-                        <p class="mb-0"><strong>Status:</strong>
-                            @php
-                                $status = strtolower($order['status']);
-                                $badgeClass = match($status) {
-                                    'waiting for payment' => 'bg-warning text-dark',
-                                    'processing' => 'bg-primary',
-                                    'completed' => 'bg-success',
-                                    default => 'bg-secondary',
-                                };
-                            @endphp
-                            <span class="badge {{ $badgeClass }}">{{ $order['status'] }}</span>
-                        </p>
-                    @endif
-                </div>
 
                 <!-- Back Button -->
                 <div class="text-end">

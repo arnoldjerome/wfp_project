@@ -4,12 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\User;
 
 class CheckoutController extends Controller
 {
     public function index(Request $request)
     {
         $cartItems = Session::get('cart', []);
+        if (empty($cartItems)) {
+            return redirect()->route('menu')->with('error', 'Keranjang anda masih kosong');
+        }
         $totalPrice = collect($cartItems)->sum(fn($item) => $item['price'] * $item['quantity']);
 
         $orderType = $request->cookie('order_type', 'dinein');
@@ -33,23 +42,19 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'payment_method' => 'required|in:cash,card',
+            'order_type' => 'required|in:dinein,takeaway'
         ]);
 
         $orderType = $request->order_type ?? 'dinein';
         $takeawayFee = ($orderType === 'takeaway') ? 3000 : 0;
 
-        // Dummy billing data
+        $user = Auth::user();
+
         $orderData = [
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'email' => 'johndoe@example.com',
-            'phone' => '081234567890',
-            'address' => 'Jalan Raya No. 123',
-            'city' => 'Denpasar',
-            'postal_code' => '80111',
+            'name' => $user->name,
+            'email' => $user->email,
             'payment_method' => $request->payment_method,
             'notes' => 'Please deliver between 10AM - 12PM',
-            'order_type' => $orderType,
         ];
 
         $status = $request->payment_method === 'card'
@@ -68,6 +73,7 @@ class CheckoutController extends Controller
             'final_total' => $finalTotal,
             'order_type' => $orderType, // ← INI TAMBAHAN PENTING
             'status' => $status,
+            'order_date' => now()->format('Y-m-d'),
             'time' => now()->toDateTimeString(),
         ]);
 

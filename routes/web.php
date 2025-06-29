@@ -9,10 +9,11 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
-
+use App\Models\Food;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -42,11 +43,6 @@ Route::get('/home', function () {
     return view('frontend.customer.home');
 })->name('customer.home')
   ->middleware(['auth', 'can:access-customer']);
-
-// Tambahkan alias:
-Route::get('/home', function () {
-    return view('frontend.customer.home');
-})->name('home');
 
 // hanya admin
 // ========== MASTER DATA (CRUD) ========== //

@@ -75,6 +75,10 @@
         @if (session('success'))
             toastr.success('{{ session('success') }}', 'Success');
         @endif
+
+        @if (session('error'))
+            toastr.error('{{ session('error') }}', 'Gagal');
+        @endif
     </script>
 
 </body>
