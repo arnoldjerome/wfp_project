@@ -25,9 +25,15 @@
 
         <div class="d-flex gap-4 overflow-auto pb-3 mb-4 border-bottom text-center justify-content-center">
             @php
-                $categories = ['All', 'Appetizer', 'Main Course', 'Dessert'];
+                // Kategori: All + dari database
+                $categoryNames = ['All'];
+                if(isset($categories)) {
+                    foreach($categories as $cat) {
+                        $categoryNames[] = $cat->name;
+                    }
+                }
             @endphp
-            @foreach ($categories as $cat)
+            @foreach ($categoryNames as $cat)
                 <div onclick="filterMenu('{{ $cat }}')" class="category-card text-center" style="cursor:pointer;">
                     <div class="rounded-circle overflow-hidden mx-auto border border-secondary category-img-wrapper">
                         <img src="{{ asset('frontend/images/' . strtolower(str_replace(' ', '', $cat)) . '.jpg') }}" alt="{{ $cat }}" class="category-img">
@@ -38,55 +44,50 @@
         </div>
 
         <div class="row row-cols-2 row-cols-md-3 g-3" id="menuContainer">
-            @php
-                $menus = [
-                    ['name' => 'Chicken Biryani', 'price' => 6, 'img' => 'm1.jpg', 'btn' => 'Customize', 'color' => 'danger', 'category' => 'Main Course', 'description' => 'A spicy and flavorful rice dish with chicken.', 'nutrition' => 'Calories: 400, Protein: 20g, Carbs: 60g'],
-                    ['name' => 'Mutton Biryani', 'price' => 8, 'img' => 'm2.jpg', 'btn' => 'Add', 'color' => 'warning', 'category' => 'Main Course', 'description' => 'A rich and tender mutton biryani with aromatic spices.', 'nutrition' => 'Calories: 500, Protein: 30g, Carbs: 50g'],
-                    ['name' => 'Veg Biryani', 'price' => 8, 'img' => 'm3.jpg', 'btn' => 'Customize', 'color' => 'danger', 'category' => 'Main Course', 'description' => 'A vegetarian rice dish with mixed vegetables and spices.', 'nutrition' => 'Calories: 350, Protein: 10g, Carbs: 70g'],
-                    ['name' => 'Fish Biryani', 'price' => 9, 'img' => 'm4.jpg', 'btn' => 'Customize', 'color' => 'danger', 'category' => 'Main Course', 'description' => 'A flavorful fish biryani with aromatic spices.', 'nutrition' => 'Calories: 450, Protein: 25g, Carbs: 55g'],
-                    ['name' => 'Spring Rolls', 'price' => 5, 'img' => 'm5.jpg', 'btn' => 'Add', 'color' => 'warning', 'category' => 'Appetizer', 'description' => 'Crispy and savory spring rolls stuffed with vegetables.', 'nutrition' => 'Calories: 200, Protein: 4g, Carbs: 40g'],
-                    ['name' => 'Ice Cream', 'price' => 4, 'img' => 'm6.jpg', 'btn' => 'Add', 'color' => 'warning', 'category' => 'Dessert', 'description' => 'A creamy and sweet vanilla ice cream.', 'nutrition' => 'Calories: 150, Protein: 2g, Carbs: 30g'],
-                ];
-            @endphp
-
-            @foreach ($menus as $menu)
-                <div class="col menu-item" data-category="{{ $menu['category'] }}">
+            {{-- Loop menu dari database --}}
+            @foreach ($foods as $food)
+                <div class="col menu-item" data-category="{{ $food->category->name ?? 'Uncategorized' }}">
                     <div class="card h-100 shadow-sm text-center menu-card">
-                        <img src="{{ asset('frontend/images/' . $menu['img']) }}" alt="{{ $menu['name'] }}" class="card-img-top" style="height: 140px; object-fit: cover;">
+                        @php
+                            $imgUrl = $food->img_url ? asset(ltrim($food->img_url, '/')) : asset('frontend/images/default.jpg');
+                        @endphp
+                        <img src="{{ $imgUrl }}" alt="{{ $food->name }}" class="card-img-top" style="height: 140px; object-fit: cover;">
                         <div class="card-body">
-                            <h6 class="card-title fw-bold">{{ $menu['name'] }}</h6>
-                            <p class="text-muted mb-1">{{ $menu['category'] }}</p>
-                            <p class="card-text mb-2">${{ number_format($menu['price'], 2) }}</p>
+                            <h6 class="card-title fw-bold">{{ $food->name }}</h6>
+                            <p class="text-muted mb-1">{{ $food->category->name ?? 'Uncategorized' }}</p>
+                            <p class="card-text mb-2">${{ number_format($food->price, 2) }}</p>
 
-                            @if ($menu['btn'] === 'Customize')
-                                <a href="{{ route('customize.page', ['name' => $menu['name']]) }}" class="btn btn-{{ $menu['color'] }} btn-sm w-100">Customize</a>
+                            {{-- Tombol Customize/Add --}}
+                            @if ($food->addOns->count() > 0)
+                                <a href="{{ route('customize.page', ['name' => $food->name]) }}" class="btn btn-danger btn-sm w-100">Customize</a>
                             @else
                                 <form action="{{ route('cart.add') }}" method="POST">
                                     @csrf
-                                    <input type="hidden" name="name" value="{{ $menu['name'] }}">
-                                    <input type="hidden" name="price" value="{{ $menu['price'] }}">
-                                    <button class="btn btn-{{ $menu['color'] }} btn-sm w-100">{{ $menu['btn'] }}</button>
+                                    <input type="hidden" name="name" value="{{ $food->name }}">
+                                    <input type="hidden" name="price" value="{{ $food->price }}">
+                                    <button class="btn btn-warning btn-sm w-100">Add</button>
                                 </form>
                             @endif
 
-                            <button class="btn btn-info btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#menuDetailModal{{ $loop->index }}">
+                            <button class="btn btn-info btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#menuDetailModal{{ $food->id }}">
                                 View Details
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="modal fade" id="menuDetailModal{{ $loop->index }}" tabindex="-1" aria-labelledby="menuDetailModalLabel{{ $loop->index }}" aria-hidden="true">
+                {{-- Modal Detail --}}
+                <div class="modal fade" id="menuDetailModal{{ $food->id }}" tabindex="-1" aria-labelledby="menuDetailModalLabel{{ $food->id }}" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">{{ $menu['name'] }} - Details</h5>
+                                <h5 class="modal-title">{{ $food->name }} - Details</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <img src="{{ asset('frontend/images/' . $menu['img']) }}" class="img-fluid mb-3" style="max-height: 200px; object-fit: cover;">
-                                <p><strong>Description:</strong> {{ $menu['description'] }}</p>
-                                <p><strong>Nutrition:</strong> {{ $menu['nutrition'] }}</p>
+                                <img src="{{ $imgUrl }}" class="img-fluid mb-3" style="max-height: 200px; object-fit: cover;">
+                                <p><strong>Description:</strong> {{ $food->description ?? '-' }}</p>
+                                <p><strong>Nutrition:</strong> {{ $food->nutrition_fact ?? '-' }}</p>
                             </div>
                         </div>
                     </div>

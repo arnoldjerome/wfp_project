@@ -18,6 +18,13 @@ class Food extends Model
     {
         return $this->belongsTo(Category::class, 'category_id','id');
     }
+
+    // Relasi ke AddOn
+    public function addOns()
+    {
+        return $this->hasMany(AddOn::class, 'food_id');
+    }
+
     protected $fillable = [
         'name',
         'description',

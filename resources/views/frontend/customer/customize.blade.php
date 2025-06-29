@@ -18,23 +18,19 @@
         <!-- Form Customize -->
         <form action="#" method="POST">
             @csrf
+            @if(isset($addons) && count($addons) > 0)
             <div class="mb-3">
                 <label class="form-label fw-semibold">Choose Add-ons:</label>
-                <div class="d-flex flex-wrap justify-content-start gap-3"> <!-- Flexbox untuk mengatur checkbox -->
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="addons[]" value="Extra Chicken" id="extraChicken" data-price="2.00">
-                        <label class="form-check-label" for="extraChicken">Extra Chicken ($2.00)</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="addons[]" value="Spicy Sauce" id="spicySauce" data-price="1.50">
-                        <label class="form-check-label" for="spicySauce">Spicy Sauce ($1.50)</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="addons[]" value="Cheese" id="cheese" data-price="1.00">
-                        <label class="form-check-label" for="cheese">Cheese ($1.00)</label>
-                    </div>
+                <div class="d-flex flex-wrap justify-content-start gap-3">
+                    @foreach($addons as $addon)
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="addons[]" value="{{ $addon->name }}" id="addon{{ $addon->id }}" data-price="{{ number_format($addon->price, 2, '.', '') }}">
+                            <label class="form-check-label" for="addon{{ $addon->id }}">{{ $addon->name }} ({{ number_format($addon->price, 2) }})</label>
+                        </div>
+                    @endforeach
                 </div>
             </div>
+            @endif
 
             <!-- Catatan Tambahan -->
             <div class="mb-3">

@@ -12,6 +12,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\MenuController;
+use App\Models\Food;
+use App\Models\AddOn;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +46,11 @@ Route::get('/home', function () {
 })->name('customer.home')
   ->middleware(['auth', 'can:access-customer']);
 
+// Tambahkan alias:
+Route::get('/home', function () {
+    return view('frontend.customer.home');
+})->name('home');
+
 // hanya admin
 // ========== MASTER DATA (CRUD) ========== //
 
@@ -61,17 +69,23 @@ Route::middleware(['auth', 'can:access-admin'])->group(function () {
 
 // hanya customer
 Route::middleware(['auth', 'can:access-customer'])->group(function () {
-    // Halaman menu
-    Route::get('/menu', action: fn() => view('frontend.customer.catalog'))->name('menu');
+    Route::get('/menu', [MenuController::class, 'index'])->name('menu');
 
-    // Halaman kustomisasi menu
+    // Halaman kustomisasi menu (hanya jika ada add-on)
     Route::get('/customize/{name}', function ($name) {
-        return view('frontend.customer.customize', compact('name'));
+        $food = Food::where('name', $name)->first();
+        if (!$food) {
+            return redirect()->route('menu')->with('error', 'Menu tidak ditemukan.');
+        }
+        $addons = \DB::table('add_ons')->where('food_id', $food->id)->get();
+        if ($addons->isEmpty()) {
+            return redirect()->route('menu')->with('error', 'Menu ini tidak memiliki add-on.');
+        }
+        return view('frontend.customer.customize', compact('name', 'addons'));
     })->name('customize.page');
 
     Route::post('/customize/{name}', [CartController::class, 'addToCart'])->name('customize.add');
 
-    // Simpan order type ke cookie
     Route::post('/set-order-type', function (Request $request) {
         $orderType = $request->input('order_type', 'dinein');
         return redirect()->route('menu')->withCookie(cookie('order_type', $orderType, 60));
@@ -133,17 +147,13 @@ Route::middleware(['auth', 'can:access-customer'])->group(function () {
         return redirect()->route('menu')->with('success', 'Keranjang berhasil dikosongkan.');
     })->name('cart.clear');
 
-    // ========== CART (DATABASE, JIKA DIPAKAI) ========== //
-
     Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-
-    // ========== CHECKOUT ==========   
 
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/invoice', [CheckoutController::class, 'invoice'])->name('invoice.show');
-
 });
+
 
 Auth::routes();
