@@ -24,6 +24,7 @@ use App\Http\Controllers\CartController;
 
 // Halaman utama
 Route::get('/', fn() => view('frontend.customer.home'))->name('home');
+Route::get('/welcome', fn() => view('welcome'));
 
 // Halaman menu
 Route::get('/menu', fn() => view('frontend.customer.catalog'))->name('menu');
