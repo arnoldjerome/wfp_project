@@ -13,8 +13,7 @@ class Order extends Model
     use HasFactory;
     protected $fillable = [
         'user_id', 'order_number', 'status', 'total_price',
-        'payment_method_id', 'discount_id',
-        'discount_amount', 'final_price', 'ordered_at'
+        'payment_method_id', 'final_price', 'ordered_at'
     ];
     protected $casts = [
         'status' => OrderStatus::class,
@@ -47,10 +46,6 @@ class Order extends Model
 
     public function paymentMethod() {
         return $this->belongsTo(Payment::class, 'payment_method_id');
-    }
-
-    public function discount() {
-        return $this->belongsTo(Discount::class);
     }
 
     public function items() {

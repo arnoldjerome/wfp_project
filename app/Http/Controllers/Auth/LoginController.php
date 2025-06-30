@@ -1,7 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
+
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -39,6 +43,18 @@ class LoginController extends Controller
         }
 
         abort(403, 'Unauthorized');
+    }
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Hapus cookie order_type
+        Cookie::queue(Cookie::forget('order_type'));
+
+        return redirect('/login');
     }
 
     /**

@@ -15,8 +15,6 @@
       <th>Makanan</th>
       <th>Status</th>
       <th>Payment</th>
-      <th>Discount</th>
-      <th>Discount Amount</th>
       <th>Total Price</th>
       <th>Final Price</th>
       <th>Order Date</th>
@@ -32,8 +30,6 @@
       <td>{{ $o->food->name ?? '-' }}</td>
       <td>{{ $o->status }}</td>
       <td>{{ $o->paymentMethod->name }}</td>
-      <td>{{ $o->discount->code ?? '-' }}</td>
-      <td>{{ $o->discount_amount ?? 0 }}</td>
       <td>{{ $o->total_price }}</td>
       <td>{{ $o->final_price }}</td>
       <td>{{ $o->ordered_at }}</td>
@@ -99,21 +95,6 @@
         <div class="mb-3">
           <label>Total Price</label>
           <input type="number" name="total_price" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-          <label>Discount</label>
-          <select name="discount_id" class="form-control">
-            <option value="">None</option>
-            @foreach ($discounts as $d)
-              <option value="{{ $d->id }}">{{ $d->code }}</option>
-            @endforeach
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label>Discount Amount</label>
-          <input type="number" name="discount_amount" class="form-control">
         </div>
 
         <div class="mb-3">
@@ -184,21 +165,6 @@
         </div>
 
         <div class="mb-3">
-          <label>Discount</label>
-          <select name="discount_id" id="edit-discount-id" class="form-control">
-            <option value="">None</option>
-            @foreach ($discounts as $d)
-              <option value="{{ $d->id }}">{{ $d->code }}</option>
-            @endforeach
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label>Discount Amount</label>
-          <input type="number" name="discount_amount" id="edit-discount-amount" class="form-control">
-        </div>
-
-        <div class="mb-3">
           <label>Final Price</label>
           <input type="number" name="final_price" id="edit-final-price" class="form-control" required>
         </div>
@@ -253,8 +219,6 @@
     document.getElementById('edit-payment-method-id').value = order.payment_method_id;
     document.getElementById('edit-status').value = order.status;
     document.getElementById('edit-total-price').value = order.total_price;
-    document.getElementById('edit-discount-id').value = order.discount_id ?? '';
-    document.getElementById('edit-discount-amount').value = order.discount_amount ?? '';
     document.getElementById('edit-final-price').value = order.final_price;
     document.getElementById('edit-ordered-at').value = order.ordered_at?.slice(0, 16);
     document.getElementById('edit-food-id').value = order.food_id;

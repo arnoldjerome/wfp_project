@@ -30,7 +30,8 @@ class Food extends Model
         'description',
         'nutrition_fact',
         'price',
-        'category_id'
+        'category_id',
+        'img_url'
     ];
 
 }

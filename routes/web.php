@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\CategoryController;
@@ -70,7 +73,7 @@ Route::middleware(['auth', 'can:access-customer'])->group(function () {
         if (!$food) {
             return redirect()->route('menu')->with('error', 'Menu tidak ditemukan.');
         }
-        $addons = \DB::table('add_ons')->where('food_id', $food->id)->get();
+        $addons = DB::table('add_ons')->where('food_id', $food->id)->get();
         if ($addons->isEmpty()) {
             return redirect()->route('menu')->with('error', 'Menu ini tidak memiliki add-on.');
         }
@@ -143,7 +146,7 @@ Route::middleware(['auth', 'can:access-customer'])->group(function () {
     Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
-    // ========== CHECKOUT ==========   
+    // ========== CHECKOUT ==========
 
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');

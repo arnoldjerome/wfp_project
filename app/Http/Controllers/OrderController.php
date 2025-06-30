@@ -20,14 +20,13 @@ class OrderController extends Controller
     {
         //
 
-        $orders = Order::with(['user', 'paymentMethod', 'discount', 'food'])->get();
+        $orders = Order::with(['user', 'paymentMethod', 'food'])->get();
         $users = User::all();
         $payments = Payment::all();
-        $discounts = Discount::all();
         $statuses = OrderStatus::options();
         $foods = Food::all();
 
-        return view("order.index", compact('orders', 'users', 'payments', 'discounts', 'statuses', 'foods'));
+        return view("order.index", compact('orders', 'users', 'payments', 'statuses', 'foods'));
         }
 
     /**
@@ -37,10 +36,9 @@ class OrderController extends Controller
     {
         $users = User::all();
         $payments = Payment::all();
-        $discounts = Discount::all();
         $foods = Food::all();
 
-        return view('order.index', compact('users', 'payments', 'discounts', 'foods'));
+        return view('order.index', compact('users', 'payments', 'foods'));
     }
 
     /**

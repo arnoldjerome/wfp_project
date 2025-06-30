@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Food;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 
@@ -32,7 +33,6 @@ class FoodController extends Controller
         $foods = $foods->sortBy('id');
 
         return view("food.index", compact('foods', 'categories'));
-
     }
 
     /**
@@ -54,6 +54,7 @@ class FoodController extends Controller
             'nutrition_fact' => 'nullable|string',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
+            'img_url' => 'required|string',
         ]);
 
         Food::create([
@@ -62,6 +63,7 @@ class FoodController extends Controller
             'nutrition_fact' => $request->nutrition_fact,
             'price' => $request->price,
             'category_id' => $request->category_id,
+            'img_url' => '/assets/images/foods/' . Str::slug($request->name) . '.jpg',
         ]);
 
         return response()->json(['message' => 'Created successfully']);
@@ -91,15 +93,21 @@ class FoodController extends Controller
     {
         $food = Food::findOrFail($id);
 
-    $food->name = $request->name;
-    $food->description = $request->description;
-    $food->nutrition_fact = $request->nutrition_fact;
-    $food->price = $request->price;
-    $food->category_id = $request->category_id;
+        $food->name = $request->name;
+        $food->description = $request->description;
+        $food->nutrition_fact = $request->nutrition_fact;
+        $food->price = $request->price;
+        $food->category_id = $request->category_id;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = Str::slug($request->name) . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('assets/images/foods'), $imageName);
+            $food->img_url = '/assets/images/foods/' . $imageName;
+        }
 
-    $food->save();
+        $food->save();
 
-    return response()->json(['message' => 'Updated successfully']);
+        return response()->json(['message' => 'Updated successfully']);
     }
 
     /**
