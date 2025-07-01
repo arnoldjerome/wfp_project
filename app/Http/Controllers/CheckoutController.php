@@ -68,7 +68,7 @@ class CheckoutController extends Controller
 
         $order = Order::create([
             'user_id' => $user->id,
-            'order_number' => 'ORD' . Str::random(6),
+            'order_number' => Order::generateOrderNumber(),
             'status' => 'pending',
             'total_price' => $totalPrice,
             'final_price' => $finalTotal,
