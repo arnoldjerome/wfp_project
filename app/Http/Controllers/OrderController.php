@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
-use App\Models\Discount;
 use App\Models\User;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -84,7 +83,6 @@ class OrderController extends Controller
     {
         $users = User::all();
         $payments = Payment::all();
-        $discounts = Discount::all();
 
         return view('order.index', compact('order', 'users', 'payments', 'discounts'));
     }
