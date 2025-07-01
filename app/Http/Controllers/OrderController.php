@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Enums\OrderStatus;
 use App\Models\Food;
+use App\Notifications\OrderStatusUpdated;
 
 class OrderController extends Controller
 {
@@ -20,14 +21,14 @@ class OrderController extends Controller
     {
         //
 
-        $orders = Order::with(['user', 'paymentMethod', 'food'])->get();
+        $orders = Order::with(['user', 'paymentMethod', 'items.food', 'items.addOns.addOn'])->paginate(5);
         $users = User::all();
         $payments = Payment::all();
         $statuses = OrderStatus::options();
         $foods = Food::all();
 
         return view("order.index", compact('orders', 'users', 'payments', 'statuses', 'foods'));
-        }
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -91,7 +92,7 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required',
-            'food_id' => 'required',
+            'food_id' => 'nullable',
             'status' => 'required',
             'payment_method_id' => 'required',
             'discount_id' => 'nullable',
@@ -102,16 +103,21 @@ class OrderController extends Controller
         ]);
 
         $order->update($validated);
+        $order->user->notify(new OrderStatusUpdated($order));
         return response()->json(['message' => 'Order updated successfully.']);
-
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Order $order)
+    public function destroy(Request $request, Order $order)
     {
         $order->delete();
+
+        if ($request->ajax()) {
+            return response()->json(['message' => 'Order deleted successfully.']);
+        }
+
         return redirect()->route('order.index')->with('success', 'Order deleted.');
     }
 }

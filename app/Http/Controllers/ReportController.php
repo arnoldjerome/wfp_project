@@ -17,12 +17,13 @@ class ReportController extends Controller
             ->first();
 
 
-        $categoryWithMostFoods = DB::table('foods')
-            ->join('categories', 'foods.category_id', '=', 'categories.id')
-            ->select('categories.name', DB::raw('COUNT(foods.id) as total_foods'))
-            ->groupBy('categories.name')
-            ->orderByDesc('total_foods')
+            $leastOrderedFood = DB::table('foods')
+            ->leftJoin('orders', 'foods.id', '=', 'orders.food_id')
+            ->select('foods.name', DB::raw('COUNT(orders.id) as total_ordered'))
+            ->groupBy('foods.id', 'foods.name')
+            ->orderBy('total_ordered')
             ->first();
+
 
         $topCustomer = DB::table('orders')
             ->join('users', 'orders.user_id', '=', 'users.id')
@@ -44,7 +45,7 @@ class ReportController extends Controller
 
         return view('report.index', compact(
             'mostOrderedFood',
-            'categoryWithMostFoods',
+            'leastOrderedFood',
             'topCustomer',
             'mostUsedPaymentMethod',
             'totalOrderAmount'

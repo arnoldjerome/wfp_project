@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
 
@@ -42,59 +43,52 @@ class CartController extends Controller
 
     public function addToCart(Request $request, $name)
     {
-        // Ambil data dari form (addons, notes, quantity)
+        $food = \App\Models\Food::where('name', $name)->firstOrFail();
         $addons = $request->input('addons', []);
+        sort($addons);
         $notes = $request->input('notes', '');
-        $quantity = $request->input('quantity', 1);
+        $quantity = (int) $request->input('quantity', 1);
 
-        // Harga dasar item
-        $basePrice = 6.00;
-        $addonsTotal = 0;
+        // Ambil data add-ons dari DB berdasarkan food_id dan nama
+        $addonData = DB::table('add_ons')
+            ->where('food_id', $food->id)
+            ->whereIn('name', $addons)
+            ->get();
 
-        // Harga per add-on
-        $addonPrices = [
-            'Extra Chicken' => 2.00,
-            'Spicy Sauce' => 1.00,
-            'Cheese' => 1.50,
-        ];
+        $addonsTotal = $addonData->sum('price');
 
-        // Hitung total harga berdasarkan addons
-        foreach ($addons as $addon) {
-            $addonsTotal += $addonPrices[$addon] ?? 0;
-        }
+        $totalPrice = ($food->price + $addonsTotal) * $quantity;
 
-        $totalPrice = ($basePrice + $addonsTotal) * $quantity;
-
-        // Ambil cart dari session
         $cart = session()->get('cart', []);
-
-        // Cek apakah item dengan nama dan addons yang sama sudah ada di keranjang
         $found = false;
+
         foreach ($cart as &$item) {
-            if ($item['name'] === $name && $item['addons'] == $addons && $item['notes'] == $notes) {
-                // Jika addons dan notes sama, tambahkan quantity
+            if (
+                $item['name'] === $name &&
+                $item['addons'] == $addons &&
+                $item['notes'] === $notes
+            ) {
                 $item['quantity'] += $quantity;
                 $found = true;
                 break;
             }
         }
 
-        // Jika belum ada, tambahkan item baru ke cart
         if (!$found) {
             $cart[] = [
+                'food_id' => $food->id,
                 'name' => $name,
-                'price' => $basePrice + $addonsTotal,
+                'price' => $food->price + $addonsTotal,
                 'quantity' => $quantity,
-                'addons' => $addons,  // Menyimpan addons
-                'notes' => $notes,    // Menyimpan notes
+                'addons' => $addons,
+                'notes' => $notes,
             ];
         }
 
-        // Simpan cart di session
         session()->put('cart', $cart);
-
-        return redirect()->route('cart.index');  // Redirect ke halaman keranjang
+        return redirect()->route('cart.index');
     }
+
 
     public function showCart()
     {
@@ -102,9 +96,8 @@ class CartController extends Controller
         $cartItems = session()->get('cart', []);
         // Hitung total harga berdasarkan item di keranjang
         $totalPrice = collect($cartItems)->sum(fn($item) => $item['price'] * $item['quantity']);
-        
+
         // Tampilkan view cart dengan data yang diambil
         return view('frontend.customer.cart', compact('cartItems', 'totalPrice'));
     }
-
 }

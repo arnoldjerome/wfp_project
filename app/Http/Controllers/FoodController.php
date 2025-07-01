@@ -17,20 +17,19 @@ class FoodController extends Controller
     public function index()
     {
         // RAW
-        $foods = DB::select("select * from foods");
-        $foods = Food::with('category')->get();
+        // $foods = DB::select("select * from foods");
+        // $foods = Food::with('category', 'addOns')->get()->sortBy('id');
         $categories = Category::all();
 
         // print_r($foods);exit;
 
         // Query Builder
-        $foods = DB::table("foods")->get();
-        $foods = $foods->sortBy('id');
+        // $foods = DB::table("foods")->get();
+        // $foods = $foods->sortBy('id');
         // print_r($foods);exit;
         // dd($foods);
         //Eloquent Model
-        $foods = Food::all();
-        $foods = $foods->sortBy('id');
+        $foods = Food::with('category', 'addOns')->orderBy('id')->paginate(5);
 
         return view("food.index", compact('foods', 'categories'));
     }
@@ -57,7 +56,7 @@ class FoodController extends Controller
             'img_url' => 'required|string',
         ]);
 
-        Food::create([
+        $food = Food::create([
             'name' => $request->name,
             'description' => $request->description,
             'nutrition_fact' => $request->nutrition_fact,
@@ -65,6 +64,15 @@ class FoodController extends Controller
             'category_id' => $request->category_id,
             'img_url' => '/assets/images/foods/' . Str::slug($request->name) . '.jpg',
         ]);
+
+        if ($request->has('addons')) {
+            foreach ($request->addons as $addon) {
+                $food->addOns()->create([
+                    'name' => $addon['name'],
+                    'price' => $addon['price'],
+                ]);
+            }
+        }
 
         return response()->json(['message' => 'Created successfully']);
     }
@@ -106,6 +114,28 @@ class FoodController extends Controller
         }
 
         $food->save();
+
+        $existingIds = [];
+        if ($request->has('addons')) {
+            foreach ($request->addons as $addon) {
+                if (isset($addon['id'])) {
+                    $food->addOns()->updateOrCreate(
+                        ['id' => $addon['id']],
+                        ['name' => $addon['name'], 'price' => $addon['price']]
+                    );
+                    $existingIds[] = $addon['id'];
+                } else {
+                    $newAddon = $food->addOns()->create([
+                        'name' => $addon['name'],
+                        'price' => $addon['price'],
+                    ]);
+                    $existingIds[] = $newAddon->id;
+                }
+            }
+        }
+
+        // Hapus add-on yang tidak ada di input
+        $food->addOns()->whereNotIn('id', $existingIds)->delete();
 
         return response()->json(['message' => 'Updated successfully']);
     }
