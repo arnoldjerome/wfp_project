@@ -13,13 +13,8 @@ use App\Notifications\OrderStatusUpdated;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
-
         $orders = Order::with(['user', 'paymentMethod', 'items.food', 'items.addOns.addOn'])->paginate(5);
         $users = User::all();
         $payments = Payment::all();
@@ -29,9 +24,6 @@ class OrderController extends Controller
         return view("order.index", compact('orders', 'users', 'payments', 'statuses', 'foods'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $users = User::all();
@@ -41,9 +33,6 @@ class OrderController extends Controller
         return view('order.index', compact('users', 'payments', 'foods'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -59,7 +48,6 @@ class OrderController extends Controller
         ]);
 
         try {
-            // Loop until a unique order number is generated
             do {
                 $orderNumber = Order::generateOrderNumber();
             } while (Order::withTrashed()->where('order_number', $orderNumber)->exists());
@@ -76,50 +64,50 @@ class OrderController extends Controller
             ], 500);
         }
     }
-    /**
-     * Display the specified resource.
-     */
+
     public function show(Order $order)
     {
         $users = User::all();
         $payments = Payment::all();
 
-        return view('order.index', compact('order', 'users', 'payments', 'discounts'));
+        return view('order.index', compact('order', 'users', 'payments'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Order $order)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Order $order)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'user_id' => 'required',
-            'food_id' => 'nullable',
-            'status' => 'required',
-            'payment_method_id' => 'required',
-            'discount_id' => 'nullable',
-            'discount_amount' => 'nullable|numeric',
-            'total_price' => 'required|numeric',
-            'final_price' => 'required|numeric',
-            'ordered_at' => 'required|date',
-        ]);
+        try {
+            $order = Order::findOrFail($id);
+            $order->user_id = $request->user_id;
+            $order->payment_method_id = $request->payment_method_id;
+            $order->status = $request->status;
+            $order->total_price = $request->total_price;
+            $order->final_price = $request->final_price;
+            $order->ordered_at = $request->ordered_at;
+            $order->save();
 
-        $order->update($validated);
-        $order->user->notify(new OrderStatusUpdated($order));
-        return response()->json(['message' => 'Order updated successfully.']);
+            // Kirim notifikasi ke user (jika user tidak null dan pakai Notifiable)
+            if ($order->user && method_exists($order->user, 'notify')) {
+                $order->user->notify(new OrderStatusUpdated($order));
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order updated successfully!',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Update failed: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Request $request, Order $order)
     {
         $order->delete();
