@@ -6,14 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use App\Enums\OrderStatus;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
-        'user_id', 'order_number', 'status', 'total_price',
-        'payment_method_id', 'final_price', 'ordered_at'
+        'user_id',
+        'order_number',
+        'status',
+        'total_price',
+        'payment_method_id',
+        'final_price',
+        'ordered_at'
     ];
     protected $casts = [
         'status' => OrderStatus::class,
@@ -25,7 +31,8 @@ class Order extends Model
         $date = Carbon::now()->format('Ymd');
         $prefix = 'ORD-' . $date;
 
-        $lastOrder = self::where('order_number', 'like', "$prefix-%")
+        $lastOrder = self::withTrashed()
+            ->where('order_number', 'like', "$prefix-%")
             ->orderBy('order_number', 'desc')
             ->first();
 
@@ -39,21 +46,25 @@ class Order extends Model
         return "$prefix-$newNumber";
     }
 
+
     //Relasi
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function paymentMethod() {
+    public function paymentMethod()
+    {
         return $this->belongsTo(Payment::class, 'payment_method_id');
     }
 
-    public function items() {
+    public function items()
+    {
         return $this->hasMany(OrderItem::class);
     }
 
-    public function food() {
+    public function food()
+    {
         return $this->belongsTo(Food::class, 'food_id');
     }
-
 }

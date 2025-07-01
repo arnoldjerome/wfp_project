@@ -65,7 +65,7 @@
         {{ $orders->links('pagination::bootstrap-5') }}
     </div>
     <br>
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createOrderModal">
+    {{-- <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createOrderModal">
         <i class="fa fa-plus"></i> Add New Order
     </button>
 
@@ -93,6 +93,28 @@
                                 <option value="{{ $food->id }}">{{ $food->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Catatan</label>
+                        <textarea name="note" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Add Ons</label>
+                        <div id="add-ons-container">
+                            <div class="d-flex mb-2">
+                                <select name="add_ons[]" class="form-control me-2">
+                                    @foreach ($foods as $food)
+                                        @foreach ($food->addOns as $addon)
+                                            <option value="{{ $addon->id }}">{{ $addon->name }}
+                                                (+{{ number_format($addon->price, 0, ',', '.') }})</option>
+                                        @endforeach
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-danger remove-addon">×</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" id="add-addon-btn">+ Tambah Add On</button>
                     </div>
                     <div class="mb-3">
                         <label>Payment Method</label>
@@ -132,7 +154,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> --}}
 
     <div class="modal fade" id="editOrderModal" tabindex="-1">
         <div class="modal-dialog">
@@ -250,6 +272,28 @@
 
             new bootstrap.Modal(document.getElementById('editOrderModal')).show();
         }
+        document.getElementById('add-addon-btn').addEventListener('click', function () {
+            const container = document.getElementById('add-ons-container');
+            const addonHtml = `
+            <div class="d-flex mb-2">
+                <select name="add_ons[]" class="form-control me-2">
+                    @foreach ($foods as $food)
+                        @foreach ($food->addOns as $addon)
+                            <option value="{{ $addon->id }}">{{ $addon->name }} (+{{ number_format($addon->price, 0, ',', '.') }})</option>
+                        @endforeach
+                    @endforeach
+                </select>
+                <button type="button" class="btn btn-danger remove-addon">×</button>
+            </div>`;
+            container.insertAdjacentHTML('beforeend', addonHtml);
+        });
+
+        document.getElementById('add-ons-container').addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-addon')) {
+                e.target.parentElement.remove();
+            }
+        });
+
 
 
         document.getElementById('editOrderForm').addEventListener('submit', function (e) {

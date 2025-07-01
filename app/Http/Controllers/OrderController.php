@@ -59,12 +59,24 @@ class OrderController extends Controller
             'ordered_at' => 'required|date',
         ]);
 
-        $validated['order_number'] = Order::generateOrderNumber();
-        Order::create($validated);
+        try {
+            // Loop until a unique order number is generated
+            do {
+                $orderNumber = Order::generateOrderNumber();
+            } while (Order::withTrashed()->where('order_number', $orderNumber)->exists());
 
-        return response()->json(['status' => 'success', 'message' => 'Order created!']);
+            $validated['order_number'] = $orderNumber;
+
+            Order::create($validated);
+
+            return response()->json(['status' => 'success', 'message' => 'Order created!']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create order: ' . $e->getMessage()
+            ], 500);
+        }
     }
-
     /**
      * Display the specified resource.
      */

@@ -116,10 +116,10 @@
                                     <p class="mb-1"><strong>Account Number:</strong> 1234-5678-90</p>
                                     <p class="mb-3"><strong>Account Name:</strong> PT. Violet Online Store</p>
 
-                                    <div class="mb-3">
+                                    {{-- <div class="mb-3">
                                         <label for="transfer_proof" class="form-label">Upload Transfer Proof</label>
                                         <input type="file" class="form-control" name="transfer_proof" id="transfer_proof">
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
 
