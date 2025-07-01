@@ -18,15 +18,15 @@ class AddOnsSeeder extends Seeder
             [
                 'id' => 1,
                 'food_id' => 1,
-                'name' => 'Extra Sambal',
-                'price' => 3000.00,
+                'name' => 'Extra Udang',
+                'price' => 15000.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'id' => 2,
                 'food_id' => 1,
-                'name' => 'Telur Dadar',
+                'name' => 'Extra Nasi',
                 'price' => 5000.00,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -42,7 +42,7 @@ class AddOnsSeeder extends Seeder
             [
                 'id' => 4,
                 'food_id' => 5,
-                'name' => 'Tahu Goreng',
+                'name' => 'Jukut Goreng',
                 'price' => 4000.00,
                 'created_at' => now(),
                 'updated_at' => now()

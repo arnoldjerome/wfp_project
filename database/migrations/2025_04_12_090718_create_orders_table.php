@@ -18,12 +18,9 @@ return new class extends Migration
             $table->enum('status', ['pending', 'preparing', 'completed', 'cancelled'])->default('pending');
             $table->decimal('total_price', 10, 2);
             $table->foreignId('payment_method_id')->constrained('payments');
-            $table->enum('payment_status', ['waiting', 'paid', 'failed'])->default('waiting');
-            $table->foreignId('discount_id')->nullable()->constrained('discounts')->onDelete('set null');
-            $table->decimal('discount_amount', 10, 2)->default(0.00);
             $table->decimal('final_price', 10, 2);
             $table->timestamp('ordered_at')->nullable();
-            $table->integer('food_id')->nullable(); // optional
+            $table->softDeletes(); // for soft delete functionality
             $table->timestamps();
         });
     }

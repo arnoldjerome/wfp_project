@@ -18,13 +18,13 @@ class PaymentSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'name' => 'qris',
+                'name' => 'credit card',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'id' => 3,
-                'name' => 'credit card',
+                'name' => 'qris',
                 'created_at' => now(),
                 'updated_at' => now()
             ]
