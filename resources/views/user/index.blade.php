@@ -28,6 +28,11 @@
   @endforeach
 </tbody>
 </table>
+
+<div class="d-flex justify-content-end mt-3">
+    {{ $datas->links('pagination::bootstrap-5') }}
+</div>
+
 <br>
 <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createUserModal">
   <i class="fa fa-plus"></i> Add New User

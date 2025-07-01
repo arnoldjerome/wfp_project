@@ -49,7 +49,7 @@
                         <div class="card-body">
                             <h6 class="card-title fw-bold">{{ $food->name }}</h6>
                             <p class="text-muted mb-1">{{ $food->category->name ?? 'Uncategorized' }}</p>
-                            <p class="card-text mb-2">${{ number_format($food->price, 2) }}</p>
+                            <p class="card-text mb-2">Rp {{ number_format($food->price, 0, ',', '.') }}</p>
 
                             {{-- Tombol Customize/Add --}}
                             @if ($food->addOns->count() > 0)
@@ -102,7 +102,7 @@
                         <span class="badge bg-{{ $orderType === 'dinein' ? 'primary' : 'danger' }} px-3 py-2 fw-bold">
                             {{ strtoupper($orderType) }}
                         </span>
-                        <button class="btn btn-outline-secondary btn-sm d-flex align-items-center" 
+                        <button class="btn btn-outline-secondary btn-sm d-flex align-items-center"
                                 data-bs-toggle="modal" data-bs-target="#orderTypeModal">
                             Change
                         </button>
@@ -150,7 +150,7 @@
 </div>
 
 
-<script>  
+<script>
     function filterMenu(category) {
         const items = document.querySelectorAll('.menu-item');
         items.forEach(item => {

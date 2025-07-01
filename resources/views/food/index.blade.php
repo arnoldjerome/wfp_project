@@ -16,6 +16,7 @@
                 <th>Nutrition Facts</th>
                 <th>Price</th>
                 <th>Category</th>
+                <th>Add Ons</th>
                 <th>Image</th>
                 <th>Action</th>
             </tr>
@@ -30,6 +31,15 @@
                         <td>{{ $f->price }}</td>
                         <td>{{ $f->category->name }}</td>
                         <td>
+                            @if ($f->addOns->count())
+                                @foreach ($f->addOns as $addon)
+                                    <div>{{ $addon->name }} - {{ number_format($addon->price) }}</div>
+                                @endforeach
+                            @else
+                                <span class="text-muted">No add-ons</span>
+                            @endif
+                        </td>
+                        <td>
                             <img src="{{ $f->img_url }}" alt="{{ $f->name }}" width="100">
                         </td>
                         <td>
@@ -43,6 +53,9 @@
             </tr>
         </tbody>
     </table>
+    <div class="d-flex justify-content-end mt-3">
+        {{ $foods->links('pagination::bootstrap-5') }}
+    </div>
 
     <br>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createFoodModal">
@@ -91,6 +104,17 @@
                                 @endforeach
                             </select>
                         </div>
+                        <hr>
+                        <h6>Add Ons</h6>
+                        <div id="create-addons-wrapper">
+                            <div class="d-flex gap-2 mb-2">
+                                <input type="text" name="addons[0][name]" class="form-control" placeholder="Add-on name">
+                                <input type="number" name="addons[0][price]" class="form-control" placeholder="Price">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addAddonField('create')">+ Add
+                            More</button>
+
 
                         <div class="mb-3">
                             <label for="create-img_url" class="form-label">Image URL</label>
@@ -110,7 +134,8 @@
     <div class="modal fade" id="editFoodModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="editFoodForm" method="POST" enctype="multipart/form-data" action="" onsubmit="return updateFood(event)">
+                <form id="editFoodForm" method="POST" enctype="multipart/form-data" action=""
+                    onsubmit="return updateFood(event)">
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="id" id="edit-id">
@@ -147,6 +172,14 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        <hr>
+                        <h6>Add Ons</h6>
+                        <div id="edit-addons-wrapper">
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addAddonField('edit')">+ Add
+                            More</button>
+
 
                         <div class="mb-3">
                             <label for="edit-image" class="form-label">Image</label>
@@ -276,6 +309,23 @@
                 console.error("Modal element not found!");
                 return;
             }
+            const addonWrapper = document.getElementById('edit-addons-wrapper');
+            addonWrapper.innerHTML = '';
+            editAddonIndex = 0;
+
+            if (food.add_ons && food.add_ons.length) {
+                food.add_ons.forEach((addon) => {
+                    const div = document.createElement('div');
+                    div.classList.add('d-flex', 'gap-2', 'mb-2');
+                    div.innerHTML = `
+                        <input type="text" name="addons[${editAddonIndex}][name]" value="${addon.name}" class="form-control" placeholder="Add-on name">
+                        <input type="number" name="addons[${editAddonIndex}][price]" value="${addon.price}" class="form-control" placeholder="Price">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">X</button>
+                    `;
+                    addonWrapper.appendChild(div);
+                    editAddonIndex++;
+                });
+            }
 
             // Assign value ke form
             document.getElementById('edit-id').value = food.id;
@@ -291,5 +341,23 @@
             modal.show();
         }
 
+    </script>
+    <script>
+        let createAddonIndex = 1;
+        let editAddonIndex = 0;
+
+        function addAddonField(mode) {
+            let wrapper = document.getElementById(`${mode}-addons-wrapper`);
+            let index = mode === 'create' ? createAddonIndex++ : editAddonIndex++;
+
+            let div = document.createElement('div');
+            div.classList.add('d-flex', 'gap-2', 'mb-2');
+            div.innerHTML = `
+                                    <input type="text" name="addons[${index}][name]" class="form-control" placeholder="Add-on name">
+                                    <input type="number" name="addons[${index}][price]" class="form-control" placeholder="Price">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">X</button>
+                                `;
+            wrapper.appendChild(div);
+        }
     </script>
 @endpush

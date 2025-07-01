@@ -25,7 +25,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::withCount('foods')->get();
+        $categories = Category::withCount('foods')->orderBy('id')->paginate(5);
+
         return view("totalfood", compact('categories'));
     }
 

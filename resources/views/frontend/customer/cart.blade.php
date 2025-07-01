@@ -45,7 +45,8 @@
                                 </form>
                             </td>
 
-                            <td class="fw-semibold bg-white">${{ number_format($item['price'] * $item['quantity'], 2) }}</td>
+                            <td class="fw-semibold bg-white">Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</td>
+
 
                             <td class="bg-white">
                                 <form action="{{ route('cart.remove', $id) }}" method="POST">
@@ -59,7 +60,7 @@
 
                     <tr class="table-light">
                         <td colspan="2" class="text-end fw-bold">Total:</td>
-                        <td colspan="2" class="fw-bold text-success">${{ number_format($totalPrice, 2) }}</td>
+                        <td colspan="2" class="fw-bold text-success">Rp {{ number_format($totalPrice, 0, ',', '.') }}</td>
                     </tr>
                 </tbody>
             </table>

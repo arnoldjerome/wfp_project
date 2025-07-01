@@ -29,6 +29,12 @@
                             </a>
                         </li>
                     @endif
+                    <li class="nav-item">
+                        <a href="{{ route('customer.orders') }}" class="nav-link"
+                            style="color: white; font-weight: bold; transition: color 0.3s;">
+                            My Orders
+                        </a>
+                    </li>
 
                     {{-- <li class="nav-item">
                         <a href="#" class="nav-link" style="color: white; font-weight: bold; transition: color 0.3s;">

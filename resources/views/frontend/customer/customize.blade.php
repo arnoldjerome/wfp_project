@@ -4,16 +4,16 @@
 <section class="pt-4 pb-5" style="background-color: #f9f9f9;">
     <div class="container" style="max-width: 600px;">
         <div class="text-center mb-4">
-            <h4 class="fw-bold">Customize Your {{ $name }}</h4>
+            <h4 class="fw-bold">Customize Your {{ $food->name }}</h4>
         </div>
 
         <!-- Gambar -->
         <div class="text-center mb-3">
-            <img src="{{ asset('frontend/images/m1.jpg') }}" alt="{{ $name }}" class="img-fluid rounded" style="max-height: 220px; object-fit: cover;">
+            <img src="{{ asset(ltrim($food->img_url, '/')) }}" alt="{{ $food->name }}" class="img-fluid rounded" style="max-height: 220px; object-fit: cover;">
         </div>
 
         <!-- Harga -->
-        <p class="text-center fw-semibold">Base Price: $6.00</p>
+        <p class="text-center fw-semibold">Base Price: Rp {{ number_format($food->price, 0, ',', '.') }}</p>
 
         <!-- Form Customize -->
         <form action="#" method="POST">
@@ -46,7 +46,7 @@
 
             <!-- Total Price -->
             <div class="mb-3">
-                <p class="text-center fw-semibold">Total Price: $<span id="totalPrice">6.00</span></p>
+                <p class="text-center fw-semibold">Total Price: Rp<span id="totalPrice">0</span></p>
             </div>
 
             <!-- Tombol -->
@@ -62,7 +62,7 @@
     // Get all checkboxes for add-ons
     const addonCheckboxes = document.querySelectorAll('input[name="addons[]"]');
     const totalPriceElement = document.getElementById('totalPrice');
-    const basePrice = 6.00;
+    const basePrice = {{ $food->price }};
 
     // Update the total price based on selected add-ons and quantity
     function updateTotalPrice() {

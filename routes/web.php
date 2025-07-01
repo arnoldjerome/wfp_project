@@ -17,6 +17,10 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
 use App\Models\Food;
+use App\Http\Controllers\CustomerOrderController;
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -41,11 +45,25 @@ Route::get('/', function () {
     abort(403, 'Unauthorized');
 })->name('root');
 
+// Mendapatkan notifikasi yang belum dibaca
+Route::get('/notifications', function () {
+    return response()->json([
+        'notifications' => auth()->user()->unreadNotifications,
+    ]);
+})->name('notifications.index');
+
+// Tandai notifikasi sebagai sudah dibaca
+Route::post('/notifications/{id}/read', function ($id) {
+    $notification = auth()->user()->notifications()->findOrFail($id);
+    $notification->markAsRead();
+    return response()->json(['status' => 'ok']);
+})->name('notifications.read');
+
 
 Route::get('/home', function () {
     return view('frontend.customer.home');
 })->name('customer.home')
-  ->middleware(['auth', 'can:access-customer']);
+    ->middleware(['auth', 'can:access-customer']);
 
 // hanya admin
 // ========== MASTER DATA (CRUD) ========== //
@@ -77,7 +95,10 @@ Route::middleware(['auth', 'can:access-customer'])->group(function () {
         if ($addons->isEmpty()) {
             return redirect()->route('menu')->with('error', 'Menu ini tidak memiliki add-on.');
         }
-        return view('frontend.customer.customize', compact('name', 'addons'));
+        return view('frontend.customer.customize', [
+            'food' => $food,
+            'addons' => $addons
+        ]);
     })->name('customize.page');
 
     Route::post('/customize/{name}', [CartController::class, 'addToCart'])->name('customize.add');
@@ -94,6 +115,9 @@ Route::middleware(['auth', 'can:access-customer'])->group(function () {
         $totalPrice = collect($cartItems)->sum(fn($item) => $item['price'] * $item['quantity']);
         return view('frontend.customer.cart', compact('cartItems', 'totalPrice'));
     })->name('cart.index');
+
+    Route::get('/my-orders', [CustomerOrderController::class, 'index'])->name('customer.orders');
+    Route::get('/invoice/{id}', [CustomerOrderController::class, 'show'])->name('invoice.detail');
 
     Route::post('/cart/add', function (Request $request) {
         $cart = Session::get('cart', []);
