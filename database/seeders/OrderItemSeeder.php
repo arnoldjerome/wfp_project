@@ -24,7 +24,7 @@ class OrderItemSeeder extends Seeder
 
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'foods_id' => $food->id,
+                    'food_id' => $food->id,
                     'quantity' => $qty,
                     'price'    => $price,
                     'note'     => fake()->optional()->sentence(),
